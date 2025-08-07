@@ -6,15 +6,16 @@ import { FiPlus, FiSearch, FiFilter, FiEdit, FiTrash2, FiCalendar, FiUser, FiDol
 
 interface Project {
   _id: string;
-  name: string;
+  title: string;
   client: string;
-  status: 'active' | 'completed' | 'on-hold' | 'cancelled';
-  startDate: string;
-  endDate: string;
+  status: 'Pending' | 'In Progress' | 'On Hold' | 'Completed';
+  deadline: string;
   budget: number;
   progress: number;
   description: string;
   category: string;
+  priority: string;
+  paid: number;
 }
 
 interface ProjectListProps {
@@ -38,7 +39,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
       const response = await fetch('/api/projects');
       if (response.ok) {
         const data = await response.json();
-        setProjects(data);
+        setProjects(data.projects || []);
       }
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -64,21 +65,21 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
 
   const filteredAndSortedProjects = projects
     .filter(project => {
-      const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            project.client.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'all' || project.status === statusFilter;
       return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
       switch (sortBy) {
-        case 'name':
-          return a.name.localeCompare(b.name);
+        case 'title':
+          return a.title.localeCompare(b.title);
         case 'client':
           return a.client.localeCompare(b.client);
         case 'status':
           return a.status.localeCompare(b.status);
-        case 'startDate':
-          return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+        case 'deadline':
+          return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
         case 'budget':
           return b.budget - a.budget;
         default:
@@ -88,14 +89,14 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
+      case 'In Progress':
         return 'bg-green-100 text-green-800';
-      case 'completed':
+      case 'Completed':
         return 'bg-blue-100 text-blue-800';
-      case 'on-hold':
+      case 'On Hold':
         return 'bg-yellow-100 text-yellow-800';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800';
+      case 'Pending':
+        return 'bg-gray-100 text-gray-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -147,10 +148,10 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
-              <option value="on-hold">On Hold</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="On Hold">On Hold</option>
+              <option value="Completed">Completed</option>
             </select>
           </div>
 
@@ -161,10 +162,10 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
               onChange={(e) => setSortBy(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="name">Sort by Name</option>
+              <option value="title">Sort by Title</option>
               <option value="client">Sort by Client</option>
               <option value="status">Sort by Status</option>
-              <option value="startDate">Sort by Start Date</option>
+              <option value="deadline">Sort by Deadline</option>
               <option value="budget">Sort by Budget</option>
             </select>
           </div>
@@ -185,7 +186,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
               {/* Project Header */}
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{project.name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{project.title}</h3>
                   <div className="flex items-center text-sm text-gray-600 mb-2">
                     <FiUser className="mr-1" />
                     {project.client}
@@ -214,7 +215,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
               <div className="space-y-2 mb-4">
                 <div className="flex items-center text-sm text-gray-600">
                   <FiCalendar className="mr-2" />
-                  {new Date(project.startDate).toLocaleDateString()} - {new Date(project.endDate).toLocaleDateString()}
+                  Deadline: {new Date(project.deadline).toLocaleDateString()}
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <FiDollarSign className="mr-2" />

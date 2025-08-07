@@ -23,14 +23,17 @@ import {
 } from 'recharts'
 
 interface Project {
-  id: string
+  _id: string
   title: string
   client: string
-  status: 'Not Started' | 'In Progress' | 'On Hold' | 'Completed'
+  status: 'Pending' | 'In Progress' | 'On Hold' | 'Completed'
   category: string
   budget: number
   deadline: string
   description: string
+  priority: string
+  progress: number
+  paid: number
 }
 
 interface Stats {
@@ -68,8 +71,8 @@ const Dashboard: React.FC = () => {
       const response = await fetch('/api/projects')
       if (response.ok) {
         const data = await response.json()
-        setProjects(data)
-        calculateStats(data)
+        setProjects(data.projects || [])
+        calculateStats(data.projects || [])
       }
     } catch (error) {
       console.error('Error fetching projects:', error)
