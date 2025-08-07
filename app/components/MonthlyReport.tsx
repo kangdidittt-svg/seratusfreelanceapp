@@ -244,7 +244,7 @@ export default function MonthlyReport() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20"
+          className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md rounded-2xl p-6 border border-slate-700/50"
         >
           <h3 className="text-xl font-bold text-white mb-6">Earnings Trend</h3>
           <div className="h-64">
@@ -284,7 +284,7 @@ export default function MonthlyReport() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
-          className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20"
+          className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md rounded-2xl p-6 border border-slate-700/50"
         >
           <h3 className="text-xl font-bold text-white mb-6">Project Categories</h3>
           <div className="h-64">
@@ -333,7 +333,7 @@ export default function MonthlyReport() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.7 }}
-        className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20"
+        className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md rounded-2xl p-6 border border-slate-700/50"
       >
         <h3 className="text-xl font-bold text-white mb-6">Top Clients Performance</h3>
         <div className="overflow-x-auto">

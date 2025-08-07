@@ -147,7 +147,7 @@ export default function Settings() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="lg:w-64 bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 h-fit"
+          className="lg:w-64 bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md rounded-2xl p-6 border border-slate-700/50 h-fit"
         >
           <nav className="space-y-2">
             {tabs.map((tab) => {
@@ -181,7 +181,7 @@ export default function Settings() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className="flex-1 bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20"
+          className="flex-1 bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md rounded-2xl p-8 border border-slate-700/50"
         >
           {/* Profile Tab */}
           {activeTab === 'profile' && (

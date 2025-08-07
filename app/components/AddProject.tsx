@@ -159,7 +159,7 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20"
+        className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md rounded-2xl p-8 border border-slate-700/50"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Project Title & Client */}
