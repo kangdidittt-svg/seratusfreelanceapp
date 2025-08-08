@@ -36,6 +36,12 @@ const monthlyData = [
   { month: 'April', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
   { month: 'May', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
   { month: 'June', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
+  { month: 'July', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
+  { month: 'August', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
+  { month: 'September', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
+  { month: 'October', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
+  { month: 'November', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
+  { month: 'December', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
 ]
 
 const categoryDataByMonth = {
@@ -44,7 +50,13 @@ const categoryDataByMonth = {
   'March': [],
   'April': [],
   'May': [],
-  'June': []
+  'June': [],
+  'July': [],
+  'August': [],
+  'September': [],
+  'October': [],
+  'November': [],
+  'December': []
 }
 
 const clientDataByMonth = {
@@ -53,13 +65,30 @@ const clientDataByMonth = {
   'March': [],
   'April': [],
   'May': [],
-  'June': []
+  'June': [],
+  'July': [],
+  'August': [],
+  'September': [],
+  'October': [],
+  'November': [],
+  'December': []
 }
 
 const COLORS = ['#8b5cf6', '#06b6d4', '#f59e0b', '#ef4444', '#10b981']
 
 export default function MonthlyReport() {
-  const [selectedMonth, setSelectedMonth] = useState('June')
+  // Get current date and determine available months
+  const currentDate = new Date()
+  const currentYear = 2025
+  const currentMonth = currentDate.getMonth() // 0-11
+  
+  // Generate available months from January to current month
+  const availableMonths = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ].slice(0, Math.max(1, currentMonth + 1)) // At least show January
+  
+  const [selectedMonth, setSelectedMonth] = useState(availableMonths[availableMonths.length - 1])
   const [reportType, setReportType] = useState('overview')
 
   // Get current month data based on selected month
@@ -88,8 +117,8 @@ export default function MonthlyReport() {
   const currentMonthData = getCurrentMonthData()
 
   // Get category and client data based on selected month
-  const categoryData = (categoryDataByMonth as any)[selectedMonth] || categoryDataByMonth['June']
-  const clientData = (clientDataByMonth as any)[selectedMonth] || clientDataByMonth['June']
+  const categoryData = (categoryDataByMonth as any)[selectedMonth] || []
+  const clientData = (clientDataByMonth as any)[selectedMonth] || []
 
   const handleExport = () => {
     // Create Excel-compatible CSV with only requested data
@@ -155,12 +184,11 @@ export default function MonthlyReport() {
             onChange={(e) => setSelectedMonth(e.target.value)}
             className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
-            <option value="January">January 2024</option>
-            <option value="February">February 2024</option>
-            <option value="March">March 2024</option>
-            <option value="April">April 2024</option>
-            <option value="May">May 2024</option>
-            <option value="June">June 2024</option>
+            {availableMonths.map((month) => (
+              <option key={month} value={month}>
+                {month} {currentYear}
+              </option>
+            ))}
           </select>
           
           <motion.button
