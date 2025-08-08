@@ -160,8 +160,8 @@ export default function MonthlyReport() {
   const currentMonthData = getCurrentMonthData()
 
   // Get category and client data based on selected month
-  const categoryData = categoryDataByMonth[selectedMonth] || categoryDataByMonth['June']
-  const clientData = clientDataByMonth[selectedMonth] || clientDataByMonth['June']
+  const categoryData = (categoryDataByMonth as any)[selectedMonth] || categoryDataByMonth['June']
+  const clientData = (clientDataByMonth as any)[selectedMonth] || clientDataByMonth['June']
 
   const handleExport = () => {
     // Create Excel-compatible CSV with proper formatting
@@ -194,13 +194,13 @@ export default function MonthlyReport() {
       // Category Breakdown Section
       'CATEGORY BREAKDOWN',
       'Category,Percentage',
-      ...categoryData.map(item => `${item.name},${item.value}%`),
+      ...categoryData.map((item: any) => `${item.name},${item.value}%`),
       '',
       
       // Client Performance Section
       'CLIENT PERFORMANCE',
       'Client,Projects,Earnings,Growth',
-      ...clientData.map(item => 
+      ...clientData.map((item: any) => 
         `${item.name},${item.projects},$${item.earnings.toLocaleString()},${item.growth}%`
       )
     ]
@@ -410,7 +410,7 @@ export default function MonthlyReport() {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {categoryData.map((entry, index) => (
+                  {categoryData.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -431,7 +431,7 @@ export default function MonthlyReport() {
             </ResponsiveContainer>
           </div>
           <div className="grid grid-cols-2 gap-2 mt-4">
-            {categoryData.map((category, index) => (
+            {categoryData.map((category: any, index: number) => (
               <div key={index} className="flex items-center space-x-2">
                 <div 
                   className="w-3 h-3 rounded-full" 
@@ -463,7 +463,7 @@ export default function MonthlyReport() {
               </tr>
             </thead>
             <tbody>
-              {clientData.map((client, index) => (
+              {clientData.map((client: any, index: number) => (
                 <motion.tr
                   key={index}
                   initial={{ opacity: 0, x: -20 }}

@@ -21,15 +21,16 @@ interface User {
 
 interface Project {
   _id: string;
-  name: string;
+  title: string;
   client: string;
-  status: 'active' | 'completed' | 'on-hold' | 'cancelled';
-  startDate: string;
-  endDate: string;
+  status: 'Pending' | 'In Progress' | 'On Hold' | 'Completed';
+  deadline: string;
   budget: number;
   progress: number;
   description: string;
   category: string;
+  priority: string;
+  paid: number;
 }
 
 export default function Home() {

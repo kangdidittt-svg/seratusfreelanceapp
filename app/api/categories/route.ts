@@ -179,7 +179,7 @@ export async function DELETE(request: NextRequest) {
     }
     
     // Remove category
-    const updatedCategories = currentCategories.filter(cat => cat !== category)
+    const updatedCategories = currentCategories.filter((cat: string) => cat !== category)
     
     await db.collection('users').updateOne(
       { _id: new ObjectId(decoded.userId) },
