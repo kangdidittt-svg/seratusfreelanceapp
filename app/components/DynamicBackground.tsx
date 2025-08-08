@@ -121,7 +121,7 @@ export default function DynamicBackground() {
           style={{
             top: isDawn ? '70%' : isDusk ? '75%' : '20%',
             left: isDawn ? '10%' : isDusk ? '85%' : '80%',
-            boxShadow: `0 0 60px ${currentTheme.colors.accent.replace('bg-', '')}`
+            boxShadow: `0 0 60px rgba(255, 193, 7, 0.6)`
           }}
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -191,7 +191,7 @@ export default function DynamicBackground() {
               left: `${-20 + i * 25}%`,
             }}
             animate={{
-              x: [0, window.innerWidth * 1.2]
+              x: [0, typeof window !== 'undefined' ? window.innerWidth * 1.2 : 1200]
             }}
             transition={{
               duration: 20 + Math.random() * 10,

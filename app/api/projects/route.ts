@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     }
 
     const mongoClient = await clientPromise;
-    const db = mongoClient.db('freelance-tracker-new');
+    const db = mongoClient.db('freelance-trackers');
     const projects = await db.collection('projects')
       .find({ userId: new ObjectId(decoded.userId) })
       .sort({ createdAt: -1 })
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     }
 
     const mongoClient = await clientPromise;
-    const db = mongoClient.db('freelance-tracker-new');
+    const db = mongoClient.db('freelance-trackers');
     
     const project = {
       title,

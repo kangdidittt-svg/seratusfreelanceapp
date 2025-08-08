@@ -198,7 +198,7 @@ async function createProjectSeeds() {
     await client.connect();
     console.log('Connected to MongoDB Atlas');
     
-    const db = client.db('freelance-tracker-new');
+    const db = client.db('freelance-trackers');
     const usersCollection = db.collection('users');
     const projectsCollection = db.collection('projects');
     

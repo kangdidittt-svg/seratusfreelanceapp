@@ -31,7 +31,7 @@ function loadEnvFile() {
 // Load environment variables
 const envVars = loadEnvFile();
 const MONGODB_URI = envVars.MONGODB_URI;
-const DB_NAME = envVars.DB_NAME || 'freelance-tracker-new';
+const DB_NAME = envVars.DB_NAME || 'freelance-trackers';
 
 if (!MONGODB_URI) {
   console.error('❌ MONGODB_URI not found in .env.local');

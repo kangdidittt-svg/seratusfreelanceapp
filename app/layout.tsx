@@ -1,7 +1,26 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import DynamicBackground from './components/DynamicBackground'
+import dynamic from 'next/dynamic'
+
+// Dynamic import for DynamicBackground to avoid SSR issues
+const DynamicBackground = dynamic(() => import('./components/DynamicBackground'), {
+  ssr: false,
+  loading: () => <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900" />
+})
+
+// Dynamic import for the client app to avoid framer-motion SSR issues
+const ClientApp = dynamic(() => import('./client-app'), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+        <p className="text-white">Loading...</p>
+      </div>
+    </div>
+  )
+})
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,7 +46,7 @@ export default function RootLayout({
           
           {/* Main content */}
           <div className="relative z-10">
-            {children}
+            <ClientApp />
           </div>
         </div>
       </body>

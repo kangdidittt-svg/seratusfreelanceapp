@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     }
 
     const mongoClient = await clientPromise
-    const db = mongoClient.db('freelance-tracker-new')
+    const db = mongoClient.db('freelance-trackers')
     
     // Handle demo user (doesn't have valid ObjectId)
     if (decoded.userId === 'demo-user-123') {
@@ -136,7 +136,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const mongoClient = await clientPromise
-    const db = mongoClient.db('freelance-tracker-new')
+    const db = mongoClient.db('freelance-trackers')
     
     // Update user profile
     const updateData = {

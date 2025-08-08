@@ -5,7 +5,7 @@ import clientPromise from '../../../../lib/mongodb';
 export async function POST(request: NextRequest) {
   try {
     const client = await clientPromise;
-    const db = client.db('freelance-tracker');
+    const db = client.db('freelance-trackers');
     const users = db.collection('users');
 
     // Check if any admin user already exists

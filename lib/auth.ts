@@ -59,7 +59,7 @@ export function verifyToken(token: string): any {
 
 export async function createUser(userData: Omit<User, '_id' | 'createdAt'>): Promise<User> {
   const client = await clientPromise;
-  const db = client.db('freelance-tracker-new');
+  const db = client.db('freelance-trackers');
   const users = db.collection<User>('users');
 
   // Check if user already exists
@@ -95,7 +95,7 @@ export async function authenticateUser(username: string, password: string): Prom
   }
 
   const client = await clientPromise;
-  const db = client.db('freelance-tracker-new');
+  const db = client.db('freelance-trackers');
   const users = db.collection<User>('users');
 
   const user = await users.findOne({ username });
@@ -139,7 +139,7 @@ export async function getUserById(userId: string): Promise<User | null> {
   }
 
   const client = await clientPromise;
-  const db = client.db('freelance-tracker-new');
+  const db = client.db('freelance-trackers');
   const users = db.collection<User>('users');
 
   const user = await users.findOne({ _id: new ObjectId(userId) });
@@ -169,7 +169,7 @@ export async function changePassword(userId: string, currentPassword: string, ne
   }
 
   const client = await clientPromise;
-  const db = client.db('freelance-tracker-new');
+  const db = client.db('freelance-trackers');
   const users = db.collection<User>('users');
 
   const { ObjectId } = require('mongodb');
