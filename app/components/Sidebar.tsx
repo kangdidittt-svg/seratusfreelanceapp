@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
 import { 
   Home, 
   Plus, 
@@ -26,6 +27,25 @@ const menuItems = [
 ]
 
 export default function Sidebar({ activeTab, setActiveTab, onLogout }: SidebarProps) {
+  const [profilePhoto, setProfilePhoto] = useState('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face')
+
+  useEffect(() => {
+    // Load saved photo from localStorage
+    const savedPhoto = localStorage.getItem('profilePhoto')
+    if (savedPhoto) setProfilePhoto(savedPhoto)
+
+    // Listen for profile photo changes
+    const handleProfilePhotoChange = (e: CustomEvent) => {
+      setProfilePhoto(e.detail)
+    }
+
+    window.addEventListener('profilePhotoChanged', handleProfilePhotoChange as EventListener)
+    
+    return () => {
+      window.removeEventListener('profilePhotoChanged', handleProfilePhotoChange as EventListener)
+    }
+  }, [])
+
   return (
     <motion.div 
       initial={{ x: -100, opacity: 0 }}
@@ -98,7 +118,7 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout }: SidebarPr
         
         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center overflow-hidden">
           <img 
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" 
+            src={profilePhoto} 
             alt="Profile" 
             className="w-full h-full object-cover"
           />

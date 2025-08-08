@@ -10,7 +10,11 @@ import {
   MapPin,
   Activity,
   Target,
-  Zap
+  Zap,
+  Sun,
+  Moon,
+  Sunrise,
+  Sunset
 } from 'lucide-react'
 import { 
   ResponsiveContainer, 
@@ -66,11 +70,131 @@ const chartDataByPeriod = {
   ]
 }
 
-const Dashboard: React.FC = () => {
+// Edinburgh Clock Component
+const EdinburghClock = () => {
+  const [time, setTime] = useState(new Date())
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      // Edinburgh timezone (Europe/London)
+      const edinburghTime = new Date().toLocaleString("en-US", {
+        timeZone: "Europe/London"
+      })
+      setTime(new Date(edinburghTime))
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [])
+
+  const getTimeIcon = () => {
+    const hour = time.getHours()
+    if (hour >= 6 && hour < 8) return <Sunrise className="w-6 h-6 text-orange-500" />
+    if (hour >= 8 && hour < 18) return <Sun className="w-6 h-6 text-yellow-500" />
+    if (hour >= 18 && hour < 20) return <Sunset className="w-6 h-6 text-orange-600" />
+    return <Moon className="w-6 h-6 text-blue-400" />
+  }
+
+  const getTimeOfDay = () => {
+    const hour = time.getHours()
+    if (hour >= 6 && hour < 8) return 'Dawn'
+    if (hour >= 8 && hour < 18) return 'Day'
+    if (hour >= 18 && hour < 20) return 'Dusk'
+    return 'Night'
+  }
+
+  const getGradientColors = () => {
+    const hour = time.getHours()
+    if (hour >= 6 && hour < 8) return 'from-orange-100 to-yellow-100'
+    if (hour >= 8 && hour < 18) return 'from-blue-100 to-cyan-100'
+    if (hour >= 18 && hour < 20) return 'from-orange-100 to-red-100'
+    return 'from-indigo-100 to-purple-100'
+  }
+
+  // Calculate angles for clock hands
+  const secondAngle = (time.getSeconds() * 6) - 90
+  const minuteAngle = (time.getMinutes() * 6) - 90
+  const hourAngle = ((time.getHours() % 12) * 30 + time.getMinutes() * 0.5) - 90
+
+  return (
+    <div className={`bg-gradient-to-br ${getGradientColors()} rounded-2xl h-48 flex flex-col items-center justify-center relative overflow-hidden`}>
+      {/* Clock Face */}
+      <div className="relative w-32 h-32 bg-white rounded-full shadow-lg border-4 border-white/50 mb-4">
+        {/* Hour markers */}
+        {[...Array(12)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-6 bg-slate-300 rounded-full"
+            style={{
+              top: '8px',
+              left: '50%',
+              transformOrigin: '50% 56px',
+              transform: `translateX(-50%) rotate(${i * 30}deg)`
+            }}
+          />
+        ))}
+        
+        {/* Hour hand */}
+        <div
+          className="absolute w-1 h-8 bg-slate-700 rounded-full origin-bottom"
+          style={{
+            bottom: '50%',
+            left: '50%',
+            transformOrigin: '50% 100%',
+            transform: `translateX(-50%) rotate(${hourAngle}deg)`
+          }}
+        />
+        
+        {/* Minute hand */}
+        <div
+          className="absolute w-0.5 h-12 bg-slate-600 rounded-full origin-bottom"
+          style={{
+            bottom: '50%',
+            left: '50%',
+            transformOrigin: '50% 100%',
+            transform: `translateX(-50%) rotate(${minuteAngle}deg)`
+          }}
+        />
+        
+        {/* Second hand */}
+        <div
+          className="absolute w-0.5 h-12 bg-red-500 rounded-full origin-bottom"
+          style={{
+            bottom: '50%',
+            left: '50%',
+            transformOrigin: '50% 100%',
+            transform: `translateX(-50%) rotate(${secondAngle}deg)`
+          }}
+        />
+        
+        {/* Center dot */}
+        <div className="absolute w-3 h-3 bg-slate-800 rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+      </div>
+      
+      {/* Time display and icon */}
+      <div className="flex items-center gap-3">
+        {getTimeIcon()}
+        <div className="text-center">
+          <p className="text-slate-700 font-bold text-lg">
+            {time.toLocaleTimeString('en-GB', { 
+              hour: '2-digit', 
+              minute: '2-digit',
+              timeZone: 'Europe/London'
+            })}
+          </p>
+          <p className="text-slate-600 text-xs font-medium">
+            Edinburgh • {getTimeOfDay()}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const Dashboard = () => {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [timeFilter, setTimeFilter] = useState('monthly')
-  const [stats, setStats] = useState<Stats>({
+  const [stats, setStats] = useState({
     totalProjects: 0,
     totalIncome: 0,
     unpaidAmount: 0,
@@ -151,55 +275,6 @@ const Dashboard: React.FC = () => {
           </button>
         </div>
       </div>
-
-      {/* Overview Chart */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-3xl p-8 text-white shadow-2xl hover:shadow-3xl transition-all duration-300"
-      >
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold mb-2">Overview</h2>
-            <p className="text-purple-200">Your project performance this month</p>
-          </div>
-          <div className="text-right">
-            <p className="text-3xl font-bold">${stats.totalIncome.toLocaleString()}</p>
-            <p className="text-purple-200 text-sm">Total Earnings</p>
-          </div>
-        </div>
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={getChartData()}>
-              <defs>
-                <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ffffff" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#ffffff" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-              <XAxis dataKey="name" stroke="rgba(255,255,255,0.7)" />
-              <YAxis stroke="rgba(255,255,255,0.7)" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'rgba(255,255,255,0.95)', 
-                  border: 'none', 
-                  borderRadius: '12px',
-                  color: '#1e293b'
-                }} 
-              />
-              <Area 
-                type="monotone" 
-                dataKey="value" 
-                stroke="#ffffff" 
-                strokeWidth={3}
-                fill="url(#colorGradient)" 
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </motion.div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
@@ -288,6 +363,55 @@ const Dashboard: React.FC = () => {
           <p className="text-2xl font-bold text-slate-800">{projects.filter(p => p.status === 'In Progress').length}</p>
         </motion.div>
       </div>
+
+      {/* Overview Chart */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-3xl p-8 text-white shadow-2xl hover:shadow-3xl transition-all duration-300"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold mb-2">Overview</h2>
+            <p className="text-purple-200">Your project performance this month</p>
+          </div>
+          <div className="text-right">
+            <p className="text-3xl font-bold">${stats.totalIncome.toLocaleString()}</p>
+            <p className="text-purple-200 text-sm">Total Earnings</p>
+          </div>
+        </div>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={getChartData()}>
+              <defs>
+                <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#ffffff" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#ffffff" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <XAxis dataKey="name" stroke="rgba(255,255,255,0.7)" />
+              <YAxis stroke="rgba(255,255,255,0.7)" />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'rgba(255,255,255,0.95)', 
+                  border: 'none', 
+                  borderRadius: '12px',
+                  color: '#1e293b'
+                }} 
+              />
+              <Area 
+                type="monotone" 
+                dataKey="value" 
+                stroke="#ffffff" 
+                strokeWidth={3}
+                fill="url(#colorGradient)" 
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </motion.div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -424,7 +548,7 @@ const Dashboard: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Live Map Section */}
+          {/* Edinburgh Clock Section */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -432,19 +556,13 @@ const Dashboard: React.FC = () => {
             className="bg-white rounded-3xl p-6 shadow-2xl border border-slate-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-slate-800">Live map</h3>
-              <button className="text-purple-600 hover:text-purple-700 text-sm font-medium">
-                View
-              </button>
-            </div>
-            <div className="bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl h-32 flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-orange-500 rounded-full mx-auto mb-2 flex items-center justify-center">
-                  <span className="text-white text-lg">🗺️</span>
-                </div>
-                <p className="text-orange-700 text-sm font-medium">Interactive Map</p>
+              <h3 className="text-lg font-bold text-slate-800">Edinburgh Time</h3>
+              <div className="flex items-center gap-1 text-purple-600 text-sm font-medium">
+                <Clock className="w-4 h-4" />
+                <span>Live</span>
               </div>
             </div>
+            <EdinburghClock />
           </motion.div>
         </div>
       </div>

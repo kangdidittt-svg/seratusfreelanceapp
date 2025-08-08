@@ -66,10 +66,17 @@ export default function Settings() {
   const [isLoading, setIsLoading] = useState(false)
   const [saveMessage, setSaveMessage] = useState('')
   const [saveError, setSaveError] = useState('')
+  const [profilePhoto, setProfilePhoto] = useState('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face')
+  const [logoUrl, setLogoUrl] = useState('')
 
   // Load profile data on component mount
   useEffect(() => {
     loadProfile()
+    // Load saved photo and logo from localStorage
+    const savedPhoto = localStorage.getItem('profilePhoto')
+    const savedLogo = localStorage.getItem('logoUrl')
+    if (savedPhoto) setProfilePhoto(savedPhoto)
+    if (savedLogo) setLogoUrl(savedLogo)
   }, [])
 
   const loadProfile = async () => {
@@ -94,7 +101,37 @@ export default function Settings() {
     setNotifications(prev => ({ ...prev, [field]: !prev[field] }))
   }
 
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const result = e.target?.result as string
+        setProfilePhoto(result)
+        // Save to localStorage for persistence
+        localStorage.setItem('profilePhoto', result)
+        // Dispatch custom event to update TopBar
+        window.dispatchEvent(new CustomEvent('profilePhotoChanged', { detail: result }))
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const result = e.target?.result as string
+        setLogoUrl(result)
+        // Save to localStorage for persistence
+        localStorage.setItem('logoUrl', result)
+        // Dispatch custom event to update TopBar
+        window.dispatchEvent(new CustomEvent('logoChanged', { detail: result }))
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
   const handleSave = async () => {
     setIsSaving(true)
@@ -102,6 +139,7 @@ export default function Settings() {
     setSaveError('')
     
     try {
+      // Save profile data to API
       const response = await fetch('/api/profile', {
         method: 'PUT',
         headers: {
@@ -113,7 +151,16 @@ export default function Settings() {
       const data = await response.json()
       
       if (response.ok) {
-        setSaveMessage('Profile updated successfully!')
+        // Also save logo and photo to localStorage (they're already saved on upload)
+        // This ensures they persist even after save
+        if (logoUrl) {
+          localStorage.setItem('logoUrl', logoUrl)
+        }
+        if (profilePhoto) {
+          localStorage.setItem('profilePhoto', profilePhoto)
+        }
+        
+        setSaveMessage('Profile, logo, and photo updated successfully!')
         // Clear success message after 3 seconds
         setTimeout(() => setSaveMessage(''), 3000)
       } else {
@@ -337,20 +384,76 @@ export default function Settings() {
               <div className="flex items-center space-x-6">
                 <div className="relative">
                   <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+                    src={profilePhoto}
                     alt="Profile"
                     className="w-24 h-24 rounded-2xl object-cover"
                   />
-                  <button className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white hover:shadow-lg transition-all duration-300">
+                  <button 
+                    onClick={() => document.getElementById('photoUpload')?.click()}
+                    className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white hover:shadow-lg transition-all duration-300"
+                  >
                     <Camera size={16} />
                   </button>
+                  <input
+                    id="photoUpload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                  />
                 </div>
                 <div>
                   <h3 className="text-white font-semibold text-lg">{profile.name}</h3>
                   <p className="text-white/60">Freelance Developer</p>
-                  <button className="text-purple-400 hover:text-purple-300 text-sm mt-1 transition-colors duration-300">
+                  <button 
+                    onClick={() => document.getElementById('photoUpload')?.click()}
+                    className="text-purple-400 hover:text-purple-300 text-sm mt-1 transition-colors duration-300"
+                  >
                     Change Photo
                   </button>
+                </div>
+              </div>
+
+              {/* Logo Upload */}
+              <div className="space-y-4">
+                <h3 className="text-white font-semibold text-lg">Studio Logo</h3>
+                <div className="flex items-center space-x-6">
+                  <div className="relative">
+                    {logoUrl ? (
+                      <img
+                        src={logoUrl}
+                        alt="Studio Logo"
+                        className="w-24 h-24 rounded-2xl object-cover border-2 border-white/20"
+                      />
+                    ) : (
+                      <div className="w-24 h-24 rounded-2xl bg-white/10 border-2 border-dashed border-white/30 flex items-center justify-center">
+                        <span className="text-white/60 text-xs text-center">No Logo</span>
+                      </div>
+                    )}
+                    <button 
+                      onClick={() => document.getElementById('logoUpload')?.click()}
+                      className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white hover:shadow-lg transition-all duration-300"
+                    >
+                      <Camera size={16} />
+                    </button>
+                    <input
+                      id="logoUpload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      className="hidden"
+                    />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-medium">Upload Studio Logo</h4>
+                    <p className="text-white/60 text-sm">This will appear in the top bar</p>
+                    <button 
+                      onClick={() => document.getElementById('logoUpload')?.click()}
+                      className="text-blue-400 hover:text-blue-300 text-sm mt-1 transition-colors duration-300"
+                    >
+                      {logoUrl ? 'Change Logo' : 'Upload Logo'}
+                    </button>
+                  </div>
                 </div>
               </div>
 

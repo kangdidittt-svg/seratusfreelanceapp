@@ -1,7 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Search, Bell, MessageCircle } from 'lucide-react'
+import { Bell, MessageCircle } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 interface TopBarProps {
   user?: {
@@ -13,6 +14,34 @@ interface TopBarProps {
 }
 
 export default function TopBar({ user }: TopBarProps) {
+  const [logoUrl, setLogoUrl] = useState('')
+  const [profilePhoto, setProfilePhoto] = useState('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face')
+
+  useEffect(() => {
+    // Load saved logo and photo from localStorage
+    const savedLogo = localStorage.getItem('logoUrl')
+    const savedPhoto = localStorage.getItem('profilePhoto')
+    if (savedLogo) setLogoUrl(savedLogo)
+    if (savedPhoto) setProfilePhoto(savedPhoto)
+
+    // Listen for custom events to update in real-time
+    const handleLogoChange = (e: CustomEvent) => {
+      setLogoUrl(e.detail)
+    }
+
+    const handleProfilePhotoChange = (e: CustomEvent) => {
+      setProfilePhoto(e.detail)
+    }
+
+    window.addEventListener('logoChanged', handleLogoChange as EventListener)
+    window.addEventListener('profilePhotoChanged', handleProfilePhotoChange as EventListener)
+    
+    return () => {
+      window.removeEventListener('logoChanged', handleLogoChange as EventListener)
+      window.removeEventListener('profilePhotoChanged', handleProfilePhotoChange as EventListener)
+    }
+  }, [])
+
   return (
     <motion.div 
       initial={{ y: -50, opacity: 0 }}
@@ -20,16 +49,9 @@ export default function TopBar({ user }: TopBarProps) {
       transition={{ duration: 0.5, delay: 0.2 }}
       className="h-16 bg-white/10 backdrop-blur-md border-b border-white/20 flex items-center justify-between px-6"
     >
-      {/* Search Bar */}
-      <div className="flex-1 max-w-md">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60" size={20} />
-          <input
-            type="text"
-            placeholder="Search projects, clients..."
-            className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-          />
-        </div>
+      {/* Studio Logo/Name */}
+      <div className="flex-1 max-w-md flex items-center">
+        <h1 className="text-2xl font-bold text-white">Seratus Studio</h1>
       </div>
 
       {/* Right Section */}
@@ -57,14 +79,10 @@ export default function TopBar({ user }: TopBarProps) {
         {/* User Profile */}
         <motion.div 
           whileHover={{ scale: 1.05 }}
-          className="flex items-center space-x-3 cursor-pointer"
+          className="cursor-pointer"
         >
-          <div className="text-right">
-            <p className="text-white font-medium text-sm">{user?.username || 'User'}</p>
-            <p className="text-white/60 text-xs capitalize">{user?.role || 'User'}</p>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center overflow-hidden">
-            <span className="text-white text-sm font-semibold">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center overflow-hidden">
+            <span className="text-white font-bold text-xl">
               {user?.username?.charAt(0).toUpperCase() || 'U'}
             </span>
           </div>
