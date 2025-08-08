@@ -6,7 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:analyze": "ANALYZE=true next build",
+    "build:docker": "docker build -t freelance-tracker .",
+    "deploy:docker": "docker-compose up --build -d",
+    "health": "curl -f http://localhost:3000/api/health || exit 1",
+    "version": "curl -s http://localhost:3000/api/version | jq",
+    "test:build": "npm run build && npm run start &",
+    "postinstall": "npm run build"
   },
   "dependencies": {
 
