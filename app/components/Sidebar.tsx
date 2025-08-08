@@ -101,32 +101,32 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout }: SidebarPr
             </motion.button>
           )
         })}
-      </nav>
-
-      {/* Profile Section */}
-      <div className="mt-auto space-y-4">
-        <motion.button
-          className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all duration-300 group"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onLogout}
-        >
-          <LogOut size={20} />
-          <div className="absolute left-16 bg-black/80 text-white text-sm px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
-            Logout
-          </div>
-        </motion.button>
         
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center overflow-hidden">
-          <Image 
-            src={profilePhoto} 
-            alt="Profile" 
-            width={48}
-            height={48}
-            className="w-full h-full object-cover"
-          />
+        {/* Profile Section - moved here after Settings */}
+        <div className="space-y-4 pt-4">
+          <motion.button
+            className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all duration-300 group"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onLogout}
+          >
+            <LogOut size={20} />
+            <div className="absolute left-16 bg-black/80 text-white text-sm px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+              Logout
+            </div>
+          </motion.button>
+          
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center overflow-hidden">
+            <Image 
+              src={profilePhoto} 
+              alt="Profile" 
+              width={48}
+              height={48}
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
-      </div>
+      </nav>
     </motion.div>
   )
 }

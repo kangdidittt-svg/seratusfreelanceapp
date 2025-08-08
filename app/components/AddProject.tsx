@@ -10,7 +10,8 @@ import {
   User, 
   FileText,
   Tag,
-  AlertCircle
+  AlertCircle,
+  CheckCircle
 } from 'lucide-react'
 
 interface ProjectForm {
@@ -49,6 +50,7 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
   const [errors, setErrors] = useState<Partial<ProjectForm>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [categories, setCategories] = useState<string[]>([])
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   // Fetch categories on component mount
   useEffect(() => {
@@ -129,12 +131,14 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
           status: 'Pending'
         })
         
-        // Show success message (you can add a toast notification here)
-        alert('Project created successfully!')
-        
-        // Call callbacks if provided
-        onProjectAdded?.()
-        onClose?.()
+        // Show success message
+        setShowSuccessModal(true)
+        setTimeout(() => {
+          setShowSuccessModal(false)
+          // Call callbacks if provided
+          onProjectAdded?.()
+          onClose?.()
+        }, 2000)
       } else {
         const errorData = await response.json()
         alert(`Error: ${errorData.error || 'Failed to create project'}`)
@@ -423,6 +427,43 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
           <li>• Add detailed descriptions to avoid confusion later</li>
         </ul>
       </motion.div>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60]"
+        >
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md rounded-2xl p-8 border border-slate-700/50 max-w-md w-full mx-4"
+          >
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center w-16 h-16 bg-green-500/20 rounded-full mb-4">
+                <CheckCircle className="w-8 h-8 text-green-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                Project Created Successfully!
+              </h3>
+              <p className="text-white/70 mb-6">
+                Your new project has been added to your workspace.
+              </p>
+              <div className="w-full bg-white/10 rounded-full h-1 overflow-hidden">
+                <motion.div
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 2 }}
+                  className="h-full bg-gradient-to-r from-green-400 to-emerald-500"
+                />
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   )
 }

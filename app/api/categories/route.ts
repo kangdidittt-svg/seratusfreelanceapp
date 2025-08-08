@@ -136,7 +136,7 @@ export async function PUT(request: NextRequest) {
     
     // Update all projects with the old category to use the new category
     await db.collection('projects').updateMany(
-      { userId: decoded.userId, category: oldCategory },
+      { userId: new ObjectId(decoded.userId), category: oldCategory },
       { $set: { category: newCategory.trim() } }
     )
     
@@ -188,7 +188,7 @@ export async function DELETE(request: NextRequest) {
     
     // Update all projects with this category to 'Other'
     await db.collection('projects').updateMany(
-      { userId: decoded.userId, category: category },
+      { userId: new ObjectId(decoded.userId), category: category },
       { $set: { category: 'Other' } }
     )
     

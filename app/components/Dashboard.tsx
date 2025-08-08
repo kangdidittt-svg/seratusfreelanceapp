@@ -14,7 +14,15 @@ import {
   Sun,
   Moon,
   Sunrise,
-  Sunset
+  Sunset,
+  Monitor,
+  Smartphone,
+  Palette,
+  Briefcase,
+  PenTool,
+  Image,
+  Layout,
+  Layers
 } from 'lucide-react'
 import { 
   ResponsiveContainer, 
@@ -104,10 +112,223 @@ const EdinburghClock = () => {
 
   const getGradientColors = () => {
     const hour = time.getHours()
-    if (hour >= 6 && hour < 8) return 'from-orange-100 to-yellow-100'
-    if (hour >= 8 && hour < 18) return 'from-blue-100 to-cyan-100'
-    if (hour >= 18 && hour < 20) return 'from-orange-100 to-red-100'
-    return 'from-indigo-100 to-purple-100'
+    if (hour >= 6 && hour < 8) return 'from-orange-200 to-yellow-200' // Dawn
+    if (hour >= 8 && hour < 18) return 'from-blue-200 to-cyan-200' // Day
+    if (hour >= 18 && hour < 20) return 'from-orange-300 to-red-300' // Dusk
+    return 'from-slate-700 to-slate-900' // Night
+  }
+
+  const renderAnimatedBackground = () => {
+    const hour = time.getHours()
+    
+    if (hour >= 6 && hour < 8) {
+      // Dawn - Rising sun and light clouds
+      return (
+        <>
+          {/* Rising Sun */}
+          <motion.div
+            className="absolute top-8 right-8 w-8 h-8 bg-orange-400 rounded-full opacity-80"
+            animate={{
+              scale: [1, 1.1, 1],
+              opacity: [0.6, 0.9, 0.6]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          {/* Light Clouds */}
+          <motion.div
+            className="absolute top-12 left-4 w-6 h-3 bg-white/40 rounded-full"
+            animate={{ x: [0, 10, 0] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute top-16 right-12 w-4 h-2 bg-white/30 rounded-full"
+            animate={{ x: [0, -8, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </>
+      )
+    } else if (hour >= 8 && hour < 18) {
+      // Day - Bright sun and floating clouds
+      return (
+        <>
+          {/* Bright Sun */}
+          <motion.div
+            className="absolute top-6 right-6 w-10 h-10 bg-yellow-400 rounded-full opacity-90"
+            animate={{
+              rotate: [0, 360],
+              scale: [1, 1.05, 1]
+            }}
+            transition={{
+              rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+              scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+            }}
+          />
+          {/* Floating Clouds */}
+          <motion.div
+            className="absolute top-10 left-2 w-8 h-4 bg-white/50 rounded-full"
+            animate={{ x: [0, 15, 0], y: [0, -3, 0] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute top-20 right-8 w-6 h-3 bg-white/40 rounded-full"
+            animate={{ x: [0, -12, 0], y: [0, 2, 0] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </>
+      )
+    } else if (hour >= 18 && hour < 20) {
+      // Dusk - Setting sun with warm glow
+      return (
+        <>
+          {/* Setting Sun */}
+          <motion.div
+            className="absolute bottom-8 left-8 w-12 h-12 bg-orange-500 rounded-full opacity-80"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.7, 1, 0.7]
+            }}
+            transition={{
+              duration: 5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          {/* Warm Glow */}
+          <motion.div
+            className="absolute bottom-6 left-6 w-16 h-16 bg-orange-300/30 rounded-full blur-sm"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.3, 0.6, 0.3]
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          {/* Evening Clouds */}
+          <motion.div
+            className="absolute top-14 right-4 w-7 h-3 bg-orange-200/60 rounded-full"
+            animate={{ x: [0, -10, 0] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </>
+      )
+    } else {
+      // Night - Crescent moon, clouds and twinkling stars
+      return (
+        <>
+          {/* Crescent Moon */}
+          <motion.div
+            className="absolute top-4 right-6 w-10 h-10"
+            animate={{
+              y: [0, -8, 0],
+              rotate: [0, 5, 0]
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            <div className="relative w-full h-full">
+              <div className="w-full h-full bg-yellow-200 rounded-full shadow-lg" />
+              <div className="absolute top-1 right-1 w-7 h-7 bg-slate-800 rounded-full" />
+            </div>
+          </motion.div>
+          
+          {/* Floating Clouds */}
+          <motion.div
+            className="absolute top-8 left-4 w-12 h-6 bg-slate-600 rounded-full opacity-40"
+            animate={{ x: [0, 15, 0] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <div className="absolute -top-2 left-2 w-8 h-4 bg-slate-600 rounded-full" />
+            <div className="absolute -top-1 right-1 w-6 h-3 bg-slate-600 rounded-full" />
+          </motion.div>
+          
+          <motion.div
+            className="absolute top-16 right-8 w-10 h-5 bg-slate-600 rounded-full opacity-30"
+            animate={{ x: [0, -12, 0] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          >
+            <div className="absolute -top-1 left-1 w-6 h-3 bg-slate-600 rounded-full" />
+            <div className="absolute -top-2 right-2 w-5 h-3 bg-slate-600 rounded-full" />
+          </motion.div>
+          
+          {/* Twinkling Stars */}
+          <motion.div
+            className="absolute top-6 left-8 w-1 h-1 bg-yellow-200 rounded-full"
+            animate={{
+              opacity: [0.3, 1, 0.3],
+              scale: [0.8, 1.2, 0.8]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.5
+            }}
+          />
+          <motion.div
+            className="absolute top-12 right-16 w-1 h-1 bg-yellow-100 rounded-full"
+            animate={{
+              opacity: [0.2, 1, 0.2],
+              scale: [0.6, 1.4, 0.6]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1
+            }}
+          />
+          <motion.div
+            className="absolute top-20 left-12 w-1 h-1 bg-yellow-200 rounded-full"
+            animate={{
+              opacity: [0.4, 1, 0.4],
+              scale: [0.7, 1.3, 0.7]
+            }}
+            transition={{
+              duration: 2.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1.5
+            }}
+          />
+          <motion.div
+            className="absolute top-10 left-20 w-1 h-1 bg-yellow-100 rounded-full"
+            animate={{
+              opacity: [0.3, 1, 0.3],
+              scale: [0.9, 1.1, 0.9]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.8
+            }}
+          />
+          <motion.div
+            className="absolute top-18 right-4 w-1 h-1 bg-yellow-200 rounded-full"
+            animate={{
+              opacity: [0.2, 1, 0.2],
+              scale: [0.5, 1.5, 0.5]
+            }}
+            transition={{
+              duration: 3.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2.2
+            }}
+          />
+        </>
+      )
+    }
   }
 
   // Calculate angles for clock hands
@@ -116,7 +337,9 @@ const EdinburghClock = () => {
   const hourAngle = ((time.getHours() % 12) * 30 + time.getMinutes() * 0.5) - 90
 
   return (
-    <div className={`bg-gradient-to-br ${getGradientColors()} rounded-2xl h-48 flex flex-col items-center justify-center relative overflow-hidden`}>
+    <div className={`bg-gradient-to-br ${getGradientColors()} h-full flex flex-col items-center justify-center relative overflow-hidden`}>
+      {/* Animated Background Elements */}
+      {renderAnimatedBackground()}
       {/* Clock Face */}
       <div className="relative w-32 h-32 bg-white rounded-full shadow-lg border-4 border-white/50 mb-4">
         {/* Hour markers */}
@@ -174,14 +397,22 @@ const EdinburghClock = () => {
       <div className="flex items-center gap-3">
         {getTimeIcon()}
         <div className="text-center">
-          <p className="text-slate-700 font-bold text-lg">
+          <p className={`font-bold text-lg text-center ${
+            time.getHours() >= 20 || time.getHours() < 6 
+              ? 'text-blue-100' 
+              : 'text-slate-700'
+          }`}>
             {time.toLocaleTimeString('en-GB', { 
               hour: '2-digit', 
               minute: '2-digit',
               timeZone: 'Europe/London'
             })}
           </p>
-          <p className="text-slate-600 text-xs font-medium">
+          <p className={`text-xs font-medium text-center ${
+            time.getHours() >= 20 || time.getHours() < 6 
+              ? 'text-blue-200' 
+              : 'text-slate-600'
+          }`}>
             Edinburgh • {getTimeOfDay()}
           </p>
         </div>
@@ -403,54 +634,71 @@ const Dashboard = () => {
         </motion.div>
       </div>
 
-      {/* Overview Chart */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-3xl p-8 text-white shadow-2xl hover:shadow-3xl transition-all duration-300"
-      >
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold mb-2">Overview</h2>
-            <p className="text-purple-200">Your project performance this month</p>
-          </div>
-          <div className="text-right">
-            <p className="text-3xl font-bold">${stats.totalIncome.toLocaleString()}</p>
-            <p className="text-purple-200 text-sm">Total Earnings</p>
-          </div>
+      {/* Overview and Edinburgh Time Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column - Overview Chart */}
+        <div className="lg:col-span-2">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-3xl p-8 text-white shadow-2xl hover:shadow-3xl transition-all duration-300"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold mb-2">Overview</h2>
+                <p className="text-purple-200">Your project performance this month</p>
+              </div>
+              <div className="text-right">
+                <p className="text-3xl font-bold">${stats.totalIncome.toLocaleString()}</p>
+                <p className="text-purple-200 text-sm">Total Earnings</p>
+              </div>
+            </div>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={getChartData()}>
+                  <defs>
+                    <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#ffffff" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#ffffff" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis dataKey="name" stroke="rgba(255,255,255,0.7)" />
+                  <YAxis stroke="rgba(255,255,255,0.7)" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(255,255,255,0.95)', 
+                      border: 'none', 
+                      borderRadius: '12px',
+                      color: '#1e293b'
+                    }} 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="value" 
+                    stroke="#ffffff" 
+                    strokeWidth={3}
+                    fill="url(#colorGradient)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </motion.div>
         </div>
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={getChartData()}>
-              <defs>
-                <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ffffff" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#ffffff" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-              <XAxis dataKey="name" stroke="rgba(255,255,255,0.7)" />
-              <YAxis stroke="rgba(255,255,255,0.7)" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'rgba(255,255,255,0.95)', 
-                  border: 'none', 
-                  borderRadius: '12px',
-                  color: '#1e293b'
-                }} 
-              />
-              <Area 
-                type="monotone" 
-                dataKey="value" 
-                stroke="#ffffff" 
-                strokeWidth={3}
-                fill="url(#colorGradient)" 
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+
+        {/* Right Column - Edinburgh Time */}
+        <div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="rounded-3xl shadow-2xl hover:shadow-3xl hover:-translate-y-1 transition-all duration-300 h-full overflow-hidden"
+          >
+            <EdinburghClock />
+          </motion.div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -468,56 +716,67 @@ const Dashboard = () => {
                 View All
               </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {getSortedProjects().slice(0, 6).map((project, index) => {
+            <div className="space-y-3">
+              {getSortedProjects().slice(0, 10).map((project, index) => {
                 const progress = project.status === 'Completed' ? 100 : 
                                 project.status === 'In Progress' ? 60 : 
                                 project.status === 'On Hold' ? 30 : 10;
-                const statusColor = project.status === 'Completed' ? 'from-green-500 to-emerald-500' :
-                                   project.status === 'In Progress' ? 'from-blue-500 to-cyan-500' :
-                                   project.status === 'On Hold' ? 'from-yellow-500 to-orange-500' :
-                                   'from-gray-500 to-gray-600';
-                const icon = project.category === 'Web Development' ? '💻' :
-                            project.category === 'Mobile App' ? '📱' :
-                            project.category === 'Design' ? '🎨' : '📁';
+                const statusColor = project.status === 'Completed' ? 'text-green-600 bg-green-50' :
+                                   project.status === 'In Progress' ? 'text-blue-600 bg-blue-50' :
+                                   project.status === 'On Hold' ? 'text-orange-600 bg-orange-50' :
+                                   'text-gray-600 bg-gray-50';
+                const getProjectIcon = () => {
+                  switch (project.category) {
+                    case 'Web Development':
+                      return <Monitor className="w-4 h-4 text-blue-600" />;
+                    case 'Mobile App':
+                      return <Smartphone className="w-4 h-4 text-green-600" />;
+                    case 'Design':
+                    case 'UI/UX Design':
+                      return <Palette className="w-4 h-4 text-purple-600" />;
+                    case 'Graphic Design':
+                      return <Image className="w-4 h-4 text-pink-600" />;
+                    case 'Branding':
+                      return <PenTool className="w-4 h-4 text-orange-600" />;
+                    case 'Marketing':
+                      return <Layout className="w-4 h-4 text-red-600" />;
+                    default:
+                      return <Briefcase className="w-4 h-4 text-gray-600" />;
+                  }
+                };
                 
                 return (
                   <motion.div
                     key={project._id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-                    className="bg-white rounded-2xl p-6 shadow-2xl hover:shadow-3xl hover:-translate-y-1 transition-all duration-300 border border-slate-100/50"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 transition-all duration-200 group cursor-pointer"
                   >
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="text-2xl">{icon}</div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${statusColor} text-white`}>
-                        {project.status}
-                      </span>
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className="flex items-center justify-center w-8 h-8 bg-gray-50 rounded-lg group-hover:bg-white transition-colors">
+                        {getProjectIcon()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-slate-800 font-medium text-sm truncate">{project.title}</h4>
+                        <p className="text-slate-500 text-xs truncate">{project.client}</p>
+                      </div>
                     </div>
                     
-                    <h4 className="text-slate-800 font-semibold text-lg mb-2">{project.title}</h4>
-                    <p className="text-slate-600 text-sm mb-4">{project.client}</p>
-                    
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-slate-600">Progress</span>
-                        <span className="text-slate-800 font-medium">{progress}%</span>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <p className="text-slate-800 font-medium text-sm">${project.budget.toLocaleString()}</p>
+                        <p className="text-slate-500 text-xs">{new Date(project.deadline).toLocaleDateString()}</p>
                       </div>
-                      <div className="w-full bg-slate-200 rounded-full h-2">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${progress}%` }}
-                          transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
-                          className={`h-2 rounded-full bg-gradient-to-r ${statusColor}`}
-                        ></motion.div>
-                      </div>
+                      <span className={`px-2 py-1 rounded-md text-xs font-medium ${statusColor} whitespace-nowrap`}>
+                        {project.status}
+                      </span>
                     </div>
                   </motion.div>
                 );
               })}
               {getSortedProjects().length === 0 && (
-                <div className="col-span-full text-center py-8">
+                <div className="text-center py-8">
                   <FolderOpen className="w-12 h-12 text-slate-400 mx-auto mb-4" />
                   <p className="text-slate-600">No projects found for {timeFilter} view</p>
                 </div>
@@ -588,22 +847,7 @@ const Dashboard = () => {
             </div>
           </motion.div>
 
-          {/* Edinburgh Clock Section */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="bg-white rounded-3xl p-6 shadow-2xl border border-slate-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-slate-800">Edinburgh Time</h3>
-              <div className="flex items-center gap-1 text-purple-600 text-sm font-medium">
-                <Clock className="w-4 h-4" />
-                <span>Live</span>
-              </div>
-            </div>
-            <EdinburghClock />
-          </motion.div>
+
         </div>
       </div>
     </div>

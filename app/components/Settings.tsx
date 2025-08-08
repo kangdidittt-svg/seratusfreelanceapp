@@ -41,6 +41,8 @@ export default function Settings() {
   const [activeTab, setActiveTab] = useState('profile')
   const [showPassword, setShowPassword] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [categoryToDelete, setCategoryToDelete] = useState<string>('')
 
   const [profile, setProfile] = useState<UserProfile>({
     name: '',
@@ -249,22 +251,25 @@ export default function Settings() {
     }
   }
 
-  const handleDeleteCategory = async (category: string) => {
-    if (!confirm(`Are you sure you want to delete "${category}"? All projects with this category will be moved to "Other".`)) {
-      return
-    }
-    
+  const handleDeleteCategory = (category: string) => {
+    setCategoryToDelete(category)
+    setShowDeleteModal(true)
+  }
+
+  const confirmDeleteCategory = async () => {
     setIsLoading(true)
     try {
       const response = await fetch('/api/categories', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category })
+        body: JSON.stringify({ category: categoryToDelete })
       })
       
       if (response.ok) {
         const data = await response.json()
         setCategories(data.categories)
+        setShowDeleteModal(false)
+        setCategoryToDelete('')
       } else {
         const error = await response.json()
         alert(error.error || 'Failed to delete category')
@@ -275,6 +280,11 @@ export default function Settings() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const cancelDeleteCategory = () => {
+    setShowDeleteModal(false)
+    setCategoryToDelete('')
   }
 
   const tabs = [
@@ -695,6 +705,49 @@ export default function Settings() {
           )}
         </motion.div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 max-w-md mx-4 shadow-2xl"
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              
+              <h3 className="text-xl font-semibold text-white mb-2">Delete Category</h3>
+              <p className="text-white/70 mb-6">
+                 Are you sure you want to delete <span className="font-medium text-white">"{categoryToDelete}"</span>?
+                 <br />
+                 <span className="text-sm">All projects with this category will be moved to "Other".</span>
+               </p>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={cancelDeleteCategory}
+                  className="flex-1 px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-medium transition-all duration-300 border border-white/20"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDeleteCategory}
+                  disabled={isLoading}
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 }

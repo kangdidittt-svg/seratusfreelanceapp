@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Bell, MessageCircle } from 'lucide-react'
+// import { Bell, MessageCircle } from 'lucide-react' // Disabled notification and message features
 import { useState, useEffect } from 'react'
 
 interface TopBarProps {
@@ -49,37 +49,16 @@ export default function TopBar({ user }: TopBarProps) {
       transition={{ duration: 0.5, delay: 0.2 }}
       className="h-16 bg-white/10 backdrop-blur-md border-b border-white/20 flex items-center justify-between px-6"
     >
-      {/* Studio Logo/Name */}
-      <div className="flex-1 max-w-md flex items-center">
-        <h1 className="text-2xl font-bold text-white">Seratus Studio</h1>
-      </div>
+      {/* Studio Logo/Name - Disabled */}
 
       {/* Right Section */}
       <div className="flex items-center space-x-4">
-        {/* Notifications */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="relative p-2 rounded-xl bg-white/10 text-white/60 hover:text-white hover:bg-white/20 transition-all duration-300"
-        >
-          <Bell size={20} />
-          <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-        </motion.button>
+        {/* Notifications and Messages buttons disabled */}
 
-        {/* Messages */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="relative p-2 rounded-xl bg-white/10 text-white/60 hover:text-white hover:bg-white/20 transition-all duration-300"
-        >
-          <MessageCircle size={20} />
-          <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
-        </motion.button>
-
-        {/* User Profile */}
+        {/* User Profile - Hidden */}
         <motion.div 
           whileHover={{ scale: 1.05 }}
-          className="cursor-pointer"
+          className="cursor-pointer hidden"
         >
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center overflow-hidden">
             <span className="text-white font-bold text-xl">
