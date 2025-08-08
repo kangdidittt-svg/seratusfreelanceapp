@@ -47,7 +47,7 @@ export default function TopBar({ user }: TopBarProps) {
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="h-16 bg-white/10 backdrop-blur-md border-b border-white/20 flex items-center justify-between px-6"
+      className="h-16 bg-gradient-to-r from-white/90 to-emerald-50/30 backdrop-blur-sm border-b border-emerald-200/50 shadow-lg flex items-center justify-between px-6 relative z-20"
     >
       {/* Studio Logo/Name - Disabled */}
 
@@ -60,8 +60,8 @@ export default function TopBar({ user }: TopBarProps) {
           whileHover={{ scale: 1.05 }}
           className="cursor-pointer hidden"
         >
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center overflow-hidden">
-            <span className="text-white font-bold text-xl">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center overflow-hidden shadow-lg">
+            <span className="text-white font-bold text-xl drop-shadow-sm">
               {user?.username?.charAt(0).toUpperCase() || 'U'}
             </span>
           </div>

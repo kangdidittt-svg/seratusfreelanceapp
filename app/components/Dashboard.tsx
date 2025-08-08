@@ -83,261 +83,345 @@ const EdinburghClock = () => {
   const [time, setTime] = useState(new Date())
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      // Edinburgh timezone (Europe/London)
-      const edinburghTime = new Date().toLocaleString("en-US", {
+    const updateEdinburghTime = () => {
+      // Get current UTC time
+      const now = new Date()
+      
+      // Create a new date object with Edinburgh timezone
+      const edinburghTime = new Date(now.toLocaleString("en-US", {
         timeZone: "Europe/London"
-      })
-      setTime(new Date(edinburghTime))
-    }, 1000)
+      }))
+      
+      setTime(edinburghTime)
+    }
+    
+    // Update immediately
+    updateEdinburghTime()
+    
+    // Then update every second
+    const timer = setInterval(updateEdinburghTime, 1000)
 
     return () => clearInterval(timer)
   }, [])
 
   const getTimeIcon = () => {
     const hour = time.getHours()
-    if (hour >= 6 && hour < 8) return <Sunrise className="w-6 h-6 text-orange-500" />
-    if (hour >= 8 && hour < 18) return <Sun className="w-6 h-6 text-yellow-500" />
-    if (hour >= 18 && hour < 20) return <Sunset className="w-6 h-6 text-orange-600" />
-    return <Moon className="w-6 h-6 text-blue-400" />
+    if (hour >= 5 && hour < 8) return <Sunrise className="w-6 h-6 text-orange-500" />
+    if (hour >= 8 && hour < 17) return <Sun className="w-6 h-6 text-yellow-500" />
+    if (hour >= 17 && hour < 20) return <Sunset className="w-6 h-6 text-orange-600" />
+    return <Moon className="w-6 h-6 text-blue-300" />
   }
 
   const getTimeOfDay = () => {
     const hour = time.getHours()
-    if (hour >= 6 && hour < 8) return 'Dawn'
-    if (hour >= 8 && hour < 18) return 'Day'
-    if (hour >= 18 && hour < 20) return 'Dusk'
+    if (hour >= 5 && hour < 8) return 'Dawn'
+    if (hour >= 8 && hour < 17) return 'Day'
+    if (hour >= 17 && hour < 20) return 'Dusk'
     return 'Night'
   }
 
-  const getGradientColors = () => {
+  const getBackgroundGradient = () => {
     const hour = time.getHours()
-    if (hour >= 6 && hour < 8) return 'from-orange-200 to-yellow-200' // Dawn
-    if (hour >= 8 && hour < 18) return 'from-blue-200 to-cyan-200' // Day
-    if (hour >= 18 && hour < 20) return 'from-orange-300 to-red-300' // Dusk
-    return 'from-slate-700 to-slate-900' // Night
+    if (hour >= 5 && hour < 8) {
+      // Dawn - Purple to orange gradient
+      return 'bg-gradient-to-br from-purple-400 via-pink-300 to-orange-200'
+    } else if (hour >= 8 && hour < 17) {
+      // Day - Blue sky gradient
+      return 'bg-gradient-to-br from-blue-300 via-cyan-200 to-blue-100'
+    } else if (hour >= 17 && hour < 20) {
+      // Dusk - Orange to red gradient
+      return 'bg-gradient-to-br from-orange-400 via-red-300 to-purple-400'
+    } else {
+      // Night - Dark blue to black gradient
+      return 'bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900'
+    }
   }
 
   const renderAnimatedBackground = () => {
     const hour = time.getHours()
     
-    if (hour >= 6 && hour < 8) {
-      // Dawn - Rising sun and light clouds
+    if (hour >= 5 && hour < 8) {
+      // Dawn - Rising sun with rays and morning mist
       return (
         <>
-          {/* Rising Sun */}
+          {/* Rising Sun with Rays */}
           <motion.div
-            className="absolute top-8 right-8 w-8 h-8 bg-orange-400 rounded-full opacity-80"
+            className="absolute top-6 right-6 w-12 h-12"
             animate={{
-              scale: [1, 1.1, 1],
-              opacity: [0.6, 0.9, 0.6]
+              rotate: [0, 360]
             }}
             transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
+              duration: 30, repeat: Infinity, ease: "linear"
             }}
-          />
-          {/* Light Clouds */}
+          >
+            <div className="relative w-full h-full">
+              {/* Sun rays */}
+              {[...Array(8)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-0.5 h-4 bg-orange-300/60 rounded-full"
+                  style={{
+                    top: '-8px',
+                    left: '50%',
+                    transformOrigin: '50% 32px',
+                    transform: `translateX(-50%) rotate(${i * 45}deg)`
+                  }}
+                />
+              ))}
+              {/* Sun core */}
+              <motion.div
+                className="w-8 h-8 bg-gradient-to-br from-orange-300 to-yellow-400 rounded-full absolute top-2 left-2 shadow-lg"
+                animate={{
+                  scale: [1, 1.1, 1]
+                }}
+                transition={{
+                  duration: 4, repeat: Infinity, ease: "easeInOut"
+                }}
+              />
+            </div>
+          </motion.div>
+          
+          {/* Morning Mist */}
           <motion.div
-            className="absolute top-12 left-4 w-6 h-3 bg-white/40 rounded-full"
-            animate={{ x: [0, 10, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute top-16 right-12 w-4 h-2 bg-white/30 rounded-full"
-            animate={{ x: [0, -8, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </>
-      )
-    } else if (hour >= 8 && hour < 18) {
-      // Day - Bright sun and floating clouds
-      return (
-        <>
-          {/* Bright Sun */}
-          <motion.div
-            className="absolute top-6 right-6 w-10 h-10 bg-yellow-400 rounded-full opacity-90"
+            className="absolute bottom-4 left-2 w-16 h-6 bg-white/20 rounded-full blur-sm"
             animate={{
-              rotate: [0, 360],
-              scale: [1, 1.05, 1]
+              x: [0, 20, 0],
+              opacity: [0.2, 0.4, 0.2]
             }}
-            transition={{
-              rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-              scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
-            }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
           />
-          {/* Floating Clouds */}
+          
+          {/* Dawn Clouds */}
           <motion.div
-            className="absolute top-10 left-2 w-8 h-4 bg-white/50 rounded-full"
-            animate={{ x: [0, 15, 0], y: [0, -3, 0] }}
+            className="absolute top-12 left-4 w-8 h-4 bg-pink-200/50 rounded-full"
+            animate={{ x: [0, 15, 0] }}
             transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute top-20 right-8 w-6 h-3 bg-white/40 rounded-full"
-            animate={{ x: [0, -12, 0], y: [0, 2, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          />
+          >
+            <div className="absolute -top-1 left-1 w-5 h-2 bg-pink-200/40 rounded-full" />
+            <div className="absolute -top-2 right-1 w-4 h-2 bg-pink-200/30 rounded-full" />
+          </motion.div>
         </>
       )
-    } else if (hour >= 18 && hour < 20) {
-      // Dusk - Setting sun with warm glow
+    } else if (hour >= 8 && hour < 17) {
+      // Day - Bright sun with heat waves and fluffy clouds
+      return (
+        <>
+          {/* Bright Sun with Heat Effect */}
+          <motion.div
+            className="absolute top-4 right-4 w-14 h-14"
+            animate={{
+              rotate: [0, 360]
+            }}
+            transition={{
+              duration: 25, repeat: Infinity, ease: "linear"
+            }}
+          >
+            {/* Heat waves */}
+            <motion.div
+              className="absolute -inset-2 rounded-full bg-yellow-200/20 blur-md"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.6, 0.3]
+              }}
+              transition={{
+                duration: 3, repeat: Infinity, ease: "easeInOut"
+              }}
+            />
+            {/* Sun with intense glow */}
+            <motion.div
+              className="w-full h-full bg-gradient-to-br from-yellow-300 to-orange-400 rounded-full shadow-2xl"
+              animate={{
+                scale: [1, 1.05, 1]
+              }}
+              transition={{
+                duration: 2, repeat: Infinity, ease: "easeInOut"
+              }}
+            />
+          </motion.div>
+          
+          {/* Fluffy Day Clouds */}
+          <motion.div
+            className="absolute top-8 left-2 w-10 h-5 bg-white/70 rounded-full shadow-sm"
+            animate={{ x: [0, 25, 0] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <div className="absolute -top-2 left-2 w-6 h-3 bg-white/60 rounded-full" />
+            <div className="absolute -top-1 right-1 w-5 h-3 bg-white/50 rounded-full" />
+          </motion.div>
+          
+          <motion.div
+            className="absolute top-16 right-8 w-8 h-4 bg-white/60 rounded-full"
+            animate={{ x: [0, -20, 0] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          >
+            <div className="absolute -top-1 left-1 w-5 h-2 bg-white/50 rounded-full" />
+          </motion.div>
+        </>
+      )
+    } else if (hour >= 17 && hour < 20) {
+      // Dusk - Setting sun with romantic glow and evening clouds
       return (
         <>
           {/* Setting Sun */}
           <motion.div
-            className="absolute bottom-8 left-8 w-12 h-12 bg-orange-500 rounded-full opacity-80"
+            className="absolute bottom-6 left-6 w-16 h-16"
             animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.7, 1, 0.7]
+              y: [0, 3, 0]
             }}
             transition={{
-              duration: 5,
-              repeat: Infinity,
-              ease: "easeInOut"
+              duration: 6, repeat: Infinity, ease: "easeInOut"
             }}
-          />
-          {/* Warm Glow */}
+          >
+            {/* Sunset glow */}
+            <motion.div
+              className="absolute -inset-4 rounded-full bg-gradient-to-br from-orange-300/30 to-red-300/20 blur-lg"
+              animate={{
+                scale: [1, 1.3, 1],
+                opacity: [0.4, 0.7, 0.4]
+              }}
+              transition={{
+                duration: 8, repeat: Infinity, ease: "easeInOut"
+              }}
+            />
+            {/* Sun core */}
+            <motion.div
+              className="w-full h-full bg-gradient-to-br from-orange-400 to-red-500 rounded-full shadow-xl"
+              animate={{
+                scale: [1, 1.1, 1]
+              }}
+              transition={{
+                duration: 5, repeat: Infinity, ease: "easeInOut"
+              }}
+            />
+          </motion.div>
+          
+          {/* Evening Clouds with Warm Tint */}
           <motion.div
-            className="absolute bottom-6 left-6 w-16 h-16 bg-orange-300/30 rounded-full blur-sm"
-            animate={{
-              scale: [1, 1.3, 1],
-              opacity: [0.3, 0.6, 0.3]
-            }}
-            transition={{
-              duration: 6,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-          {/* Evening Clouds */}
+            className="absolute top-10 right-4 w-12 h-6 bg-orange-200/60 rounded-full"
+            animate={{ x: [0, -15, 0] }}
+            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <div className="absolute -top-2 left-2 w-7 h-3 bg-orange-200/50 rounded-full" />
+            <div className="absolute -top-1 right-1 w-6 h-3 bg-red-200/40 rounded-full" />
+          </motion.div>
+          
           <motion.div
-            className="absolute top-14 right-4 w-7 h-3 bg-orange-200/60 rounded-full"
-            animate={{ x: [0, -10, 0] }}
-            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          />
+            className="absolute top-18 left-8 w-10 h-5 bg-purple-200/50 rounded-full"
+            animate={{ x: [0, 18, 0] }}
+            transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+          >
+            <div className="absolute -top-1 left-1 w-6 h-3 bg-purple-200/40 rounded-full" />
+          </motion.div>
         </>
       )
     } else {
-      // Night - Crescent moon, clouds and twinkling stars
+      // Night - Crescent moon, twinkling stars, and dark clouds
       return (
         <>
-          {/* Crescent Moon */}
+          {/* Crescent Moon with Glow */}
           <motion.div
-            className="absolute top-4 right-6 w-10 h-10"
+            className="absolute top-6 right-6 w-12 h-12"
             animate={{
-              y: [0, -8, 0],
-              rotate: [0, 5, 0]
+              y: [0, -8, 0]
             }}
             transition={{
-              duration: 6,
-              repeat: Infinity,
-              ease: "easeInOut"
+              duration: 8, repeat: Infinity, ease: "easeInOut"
             }}
           >
-            <div className="relative w-full h-full">
-              <div className="w-full h-full bg-yellow-200 rounded-full shadow-lg" />
-              <div className="absolute top-1 right-1 w-7 h-7 bg-slate-800 rounded-full" />
-            </div>
+            {/* Moon glow */}
+            <motion.div
+              className="absolute -inset-2 rounded-full bg-yellow-200/20 blur-md"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.6, 0.3]
+              }}
+              transition={{
+                duration: 6, repeat: Infinity, ease: "easeInOut"
+              }}
+            />
+            {/* Crescent Moon */}
+            <motion.div
+              className="w-full h-full bg-gradient-to-br from-yellow-200 to-yellow-300 rounded-full relative overflow-hidden shadow-lg"
+              animate={{
+                rotate: [0, 15, 0]
+              }}
+              transition={{
+                duration: 10, repeat: Infinity, ease: "easeInOut"
+              }}
+            >
+              <div className="absolute top-1 right-1 w-8 h-8 bg-slate-800 rounded-full" />
+            </motion.div>
           </motion.div>
           
-          {/* Floating Clouds */}
-          <motion.div
-            className="absolute top-8 left-4 w-12 h-6 bg-slate-600 rounded-full opacity-40"
-            animate={{ x: [0, 15, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <div className="absolute -top-2 left-2 w-8 h-4 bg-slate-600 rounded-full" />
-            <div className="absolute -top-1 right-1 w-6 h-3 bg-slate-600 rounded-full" />
-          </motion.div>
+          {/* Twinkling Stars - Multiple Sizes */}
+          {[...Array(8)].map((_, i) => (
+            <motion.div
+              key={i}
+              className={`absolute bg-yellow-200 rounded-full ${
+                i % 3 === 0 ? 'w-1.5 h-1.5' : i % 2 === 0 ? 'w-1 h-1' : 'w-0.5 h-0.5'
+              }`}
+              style={{
+                top: `${15 + (i * 9)}%`,
+                left: `${8 + (i * 11)}%`,
+                filter: 'drop-shadow(0 0 2px rgba(254, 240, 138, 0.8))'
+              }}
+              animate={{
+                opacity: [0.2, 1, 0.2],
+                scale: [0.8, 1.2, 0.8]
+              }}
+              transition={{
+                duration: 2 + (i * 0.4),
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: i * 0.2
+              }}
+            />
+          ))}
           
+          {/* Shooting Star */}
           <motion.div
-            className="absolute top-16 right-8 w-10 h-5 bg-slate-600 rounded-full opacity-30"
-            animate={{ x: [0, -12, 0] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          >
-            <div className="absolute -top-1 left-1 w-6 h-3 bg-slate-600 rounded-full" />
-            <div className="absolute -top-2 right-2 w-5 h-3 bg-slate-600 rounded-full" />
-          </motion.div>
-          
-          {/* Twinkling Stars */}
-          <motion.div
-            className="absolute top-6 left-8 w-1 h-1 bg-yellow-200 rounded-full"
+            className="absolute top-8 left-4 w-8 h-0.5 bg-gradient-to-r from-transparent via-yellow-200 to-transparent rounded-full"
             animate={{
-              opacity: [0.3, 1, 0.3],
-              scale: [0.8, 1.2, 0.8]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 0.5
-            }}
-          />
-          <motion.div
-            className="absolute top-12 right-16 w-1 h-1 bg-yellow-100 rounded-full"
-            animate={{
-              opacity: [0.2, 1, 0.2],
-              scale: [0.6, 1.4, 0.6]
+              x: [0, 60],
+              opacity: [0, 1, 0]
             }}
             transition={{
               duration: 3,
               repeat: Infinity,
-              ease: "easeInOut",
-              delay: 1
+              ease: "easeOut",
+              repeatDelay: 8
             }}
           />
+          
+          {/* Dark Night Clouds */}
           <motion.div
-            className="absolute top-20 left-12 w-1 h-1 bg-yellow-200 rounded-full"
-            animate={{
-              opacity: [0.4, 1, 0.4],
-              scale: [0.7, 1.3, 0.7]
-            }}
-            transition={{
-              duration: 2.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 1.5
-            }}
-          />
+            className="absolute top-12 left-6 w-10 h-5 bg-slate-700/50 rounded-full"
+            animate={{ x: [0, 12, 0] }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <div className="absolute -top-2 left-2 w-6 h-3 bg-slate-700/40 rounded-full" />
+            <div className="absolute -top-1 right-1 w-5 h-3 bg-slate-600/30 rounded-full" />
+          </motion.div>
+          
           <motion.div
-            className="absolute top-10 left-20 w-1 h-1 bg-yellow-100 rounded-full"
-            animate={{
-              opacity: [0.3, 1, 0.3],
-              scale: [0.9, 1.1, 0.9]
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 0.8
-            }}
-          />
-          <motion.div
-            className="absolute top-18 right-4 w-1 h-1 bg-yellow-200 rounded-full"
-            animate={{
-              opacity: [0.2, 1, 0.2],
-              scale: [0.5, 1.5, 0.5]
-            }}
-            transition={{
-              duration: 3.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 2.2
-            }}
-          />
+            className="absolute top-20 right-10 w-8 h-4 bg-slate-600/40 rounded-full"
+            animate={{ x: [0, -15, 0] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+          >
+            <div className="absolute -top-1 left-1 w-5 h-2 bg-slate-600/30 rounded-full" />
+          </motion.div>
         </>
       )
     }
   }
 
   // Calculate angles for clock hands
-  const secondAngle = (time.getSeconds() * 6) - 90
-  const minuteAngle = (time.getMinutes() * 6) - 90
-  const hourAngle = ((time.getHours() % 12) * 30 + time.getMinutes() * 0.5) - 90
+  const secondAngle = time.getSeconds() * 6
+  const minuteAngle = time.getMinutes() * 6
+  const hourAngle = (time.getHours() % 12) * 30 + time.getMinutes() * 0.5
 
   return (
-    <div className={`bg-gradient-to-br ${getGradientColors()} h-full flex flex-col items-center justify-center relative overflow-hidden`}>
+    <div className="bg-white h-full flex flex-col items-center justify-center relative overflow-hidden border border-gray-100 rounded-3xl shadow-lg">
       {/* Animated Background Elements */}
       {renderAnimatedBackground()}
       {/* Clock Face */}
@@ -397,23 +481,15 @@ const EdinburghClock = () => {
       <div className="flex items-center gap-3">
         {getTimeIcon()}
         <div className="text-center">
-          <p className={`font-bold text-lg text-center ${
-            time.getHours() >= 20 || time.getHours() < 6 
-              ? 'text-blue-100' 
-              : 'text-slate-700'
-          }`}>
+          <p className="font-bold text-lg text-center text-gray-800">
             {time.toLocaleTimeString('en-GB', { 
               hour: '2-digit', 
               minute: '2-digit',
-              timeZone: 'Europe/London'
+              second: '2-digit'
             })}
           </p>
-          <p className={`text-xs font-medium text-center ${
-            time.getHours() >= 20 || time.getHours() < 6 
-              ? 'text-blue-200' 
-              : 'text-slate-600'
-          }`}>
-            Edinburgh • {getTimeOfDay()}
+          <p className="text-xs font-medium text-center text-gray-600">
+            Edinburgh, UK • {getTimeOfDay()}
           </p>
         </div>
       </div>
@@ -518,8 +594,8 @@ const Dashboard = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading dashboard...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
         </div>
       </div>
     )
@@ -530,14 +606,14 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Dashboard</h1>
-          <p className="text-white/80">Welcome back! Here&apos;s what&apos;s happening with your projects.</p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Dashboard</h1>
+          <p className="text-gray-600">Welcome back! Here&apos;s what&apos;s happening with your projects.</p>
         </div>
         <div className="flex items-center gap-4">
           <select 
             value={timeFilter}
             onChange={(e) => setTimeFilter(e.target.value)}
-            className="bg-white/10 border border-white/20 rounded-2xl px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
+            className="bg-gradient-to-r from-white to-emerald-50/50 border border-emerald-200/50 rounded-xl px-4 py-2 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm backdrop-blur-sm"
           >
             <option value="monthly">Monthly</option>
             <option value="weekly">Weekly</option>
@@ -553,13 +629,13 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-white rounded-3xl p-6 shadow-2xl border border-slate-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
+          className="bg-gradient-to-br from-white/90 to-emerald-50/30 backdrop-blur-sm rounded-3xl p-6 shadow-2xl border border-emerald-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
         >
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <DollarSign className="w-6 h-6 text-white drop-shadow-sm" />
             </div>
-            <span className="text-green-600 text-sm font-medium">+12%</span>
+            <span className="text-emerald-600 text-sm font-medium">+12%</span>
           </div>
           <h3 className="text-slate-600 text-sm font-medium mb-1">Total Earnings</h3>
           <p className="text-2xl font-bold text-slate-800">${stats.totalIncome.toLocaleString()}</p>
@@ -570,13 +646,13 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-white rounded-3xl p-6 shadow-2xl border border-slate-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
+          className="bg-gradient-to-br from-white/90 to-emerald-50/30 backdrop-blur-sm rounded-3xl p-6 shadow-2xl border border-emerald-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
         >
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center">
-              <Target className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <Target className="w-6 h-6 text-white drop-shadow-sm" />
             </div>
-            <span className="text-blue-600 text-sm font-medium">+8%</span>
+            <span className="text-emerald-600 text-sm font-medium">+8%</span>
           </div>
           <h3 className="text-slate-600 text-sm font-medium mb-1">Projects Completed</h3>
           <p className="text-2xl font-bold text-slate-800">{stats.completedProjects}</p>
@@ -587,13 +663,13 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="bg-white rounded-3xl p-6 shadow-2xl border border-slate-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
+          className="bg-gradient-to-br from-white/90 to-emerald-50/30 backdrop-blur-sm rounded-3xl p-6 shadow-2xl border border-emerald-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
         >
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <TrendingUp className="w-6 h-6 text-white drop-shadow-sm" />
             </div>
-            <span className="text-purple-600 text-sm font-medium">+5%</span>
+            <span className="text-emerald-600 text-sm font-medium">+5%</span>
           </div>
           <h3 className="text-slate-600 text-sm font-medium mb-1">Avg Project Value</h3>
           <p className="text-2xl font-bold text-slate-800">${stats.totalProjects > 0 ? Math.round(stats.totalIncome / stats.totalProjects).toLocaleString() : '0'}</p>
@@ -604,11 +680,11 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="bg-white rounded-3xl p-6 shadow-2xl border border-slate-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
+          className="bg-gradient-to-br from-white/90 to-orange-50/30 backdrop-blur-sm rounded-3xl p-6 shadow-2xl border border-orange-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
         >
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center">
-              <Clock className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
+              <Clock className="w-6 h-6 text-white drop-shadow-sm" />
             </div>
             <span className="text-orange-600 text-sm font-medium">-3%</span>
           </div>
@@ -621,13 +697,13 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="bg-white rounded-3xl p-6 shadow-xl border border-slate-100 hover:shadow-2xl transition-all duration-300"
+          className="bg-gradient-to-br from-white/90 to-emerald-50/30 backdrop-blur-sm rounded-3xl p-6 shadow-2xl border border-emerald-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
         >
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center">
-              <Activity className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <Activity className="w-6 h-6 text-white drop-shadow-sm" />
             </div>
-            <span className="text-indigo-600 text-sm font-medium">+15%</span>
+            <span className="text-emerald-600 text-sm font-medium">+15%</span>
           </div>
           <h3 className="text-slate-600 text-sm font-medium mb-1">Active Projects</h3>
           <p className="text-2xl font-bold text-slate-800">{getSortedProjects().filter(p => p.status === 'In Progress').length}</p>
@@ -642,16 +718,16 @@ const Dashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-3xl p-8 text-white shadow-2xl hover:shadow-3xl transition-all duration-300"
+            className="bg-gradient-to-br from-white/90 to-emerald-50/20 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-emerald-100/50 hover:shadow-3xl transition-all duration-300"
           >
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-bold mb-2">Overview</h2>
-                <p className="text-purple-200">Your project performance this month</p>
+                <h2 className="text-2xl font-bold mb-2 text-gray-800">Overview</h2>
+                <p className="text-gray-600">Your project performance this month</p>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold">${stats.totalIncome.toLocaleString()}</p>
-                <p className="text-purple-200 text-sm">Total Earnings</p>
+                <p className="text-3xl font-bold text-gray-800">${stats.totalIncome.toLocaleString()}</p>
+                <p className="text-gray-600 text-sm">Total Earnings</p>
               </div>
             </div>
             <div className="h-64">
@@ -659,25 +735,26 @@ const Dashboard = () => {
                 <AreaChart data={getChartData()}>
                   <defs>
                     <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#ffffff" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#ffffff" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis dataKey="name" stroke="rgba(255,255,255,0.7)" />
-                  <YAxis stroke="rgba(255,255,255,0.7)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(156,163,175,0.3)" />
+                  <XAxis dataKey="name" stroke="#6b7280" />
+                  <YAxis stroke="#6b7280" />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: 'rgba(255,255,255,0.95)', 
-                      border: 'none', 
+                      backgroundColor: 'white', 
+                      border: '1px solid #e5e7eb', 
                       borderRadius: '12px',
-                      color: '#1e293b'
+                      color: '#374151',
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
                     }} 
                   />
                   <Area 
                     type="monotone" 
                     dataKey="value" 
-                    stroke="#ffffff" 
+                    stroke="#10b981" 
                     strokeWidth={3}
                     fill="url(#colorGradient)" 
                   />
@@ -708,11 +785,11 @@ const Dashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            className="bg-white rounded-3xl p-6 shadow-2xl border border-slate-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
+            className="bg-gradient-to-br from-white/90 to-emerald-50/20 backdrop-blur-sm rounded-3xl p-6 shadow-2xl border border-emerald-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-slate-800">Recent Projects</h2>
-              <button className="text-purple-600 hover:text-purple-700 text-sm font-medium">
+              <h2 className="text-xl font-bold text-gray-800">Recent Projects</h2>
+              <button className="text-emerald-600 hover:text-emerald-700 text-sm font-medium px-3 py-1 rounded-lg hover:bg-emerald-50 transition-colors">
                 View All
               </button>
             </div>
@@ -751,22 +828,22 @@ const Dashboard = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 transition-all duration-200 group cursor-pointer"
+                    className="flex items-center justify-between p-4 rounded-xl hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-white/80 transition-all duration-200 group cursor-pointer border border-transparent hover:border-emerald-200/30"
                   >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="flex items-center justify-center w-8 h-8 bg-gray-50 rounded-lg group-hover:bg-white transition-colors">
+                      <div className="flex items-center justify-center w-8 h-8 bg-emerald-50/50 rounded-lg group-hover:bg-white group-hover:shadow-sm transition-all duration-200">
                         {getProjectIcon()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-slate-800 font-medium text-sm truncate">{project.title}</h4>
-                        <p className="text-slate-500 text-xs truncate">{project.client}</p>
+                        <h4 className="text-gray-800 font-medium text-sm truncate">{project.title}</h4>
+                        <p className="text-gray-600 text-xs truncate">{project.client}</p>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-3">
                       <div className="text-right">
-                        <p className="text-slate-800 font-medium text-sm">${project.budget.toLocaleString()}</p>
-                        <p className="text-slate-500 text-xs">{new Date(project.deadline).toLocaleDateString()}</p>
+                        <p className="text-gray-800 font-medium text-sm">${project.budget.toLocaleString()}</p>
+                        <p className="text-gray-600 text-xs">{new Date(project.deadline).toLocaleDateString()}</p>
                       </div>
                       <span className={`px-2 py-1 rounded-md text-xs font-medium ${statusColor} whitespace-nowrap`}>
                         {project.status}
@@ -778,7 +855,7 @@ const Dashboard = () => {
               {getSortedProjects().length === 0 && (
                 <div className="text-center py-8">
                   <FolderOpen className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                  <p className="text-slate-600">No projects found for {timeFilter} view</p>
+                  <p className="text-gray-600">No projects found for {timeFilter} view</p>
                 </div>
               )}
             </div>
@@ -792,11 +869,11 @@ const Dashboard = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="bg-white rounded-3xl p-6 shadow-2xl border border-slate-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
+            className="bg-gradient-to-br from-white/90 to-emerald-50/20 backdrop-blur-sm rounded-3xl p-6 shadow-2xl border border-emerald-100/50 hover:shadow-3xl hover:-translate-y-1 transition-all duration-300"
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-slate-800">My Clients</h3>
-              <button className="text-purple-600 hover:text-purple-700 text-sm font-medium">
+              <h3 className="text-lg font-bold text-gray-800">My Clients</h3>
+              <button className="text-emerald-600 hover:text-emerald-700 text-sm font-medium px-3 py-1 rounded-lg hover:bg-emerald-50 transition-colors">
                 View all
               </button>
             </div>
@@ -815,15 +892,15 @@ const Dashboard = () => {
                       // Navigate to client projects
                       console.log(`View projects for ${clientName}`);
                     }}
-                    className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-slate-50 transition-colors group"
+                    className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-white/80 transition-all duration-200 group border border-transparent hover:border-emerald-200/30"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium text-sm">
+                      <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-medium text-sm shadow-md">
                         {avatars[index % avatars.length]}
                       </div>
                       <div className="text-left">
-                        <p className="font-medium text-slate-800 text-sm">{clientName}</p>
-                        <p className="text-xs text-slate-500">
+                        <p className="font-medium text-gray-800 text-sm">{clientName}</p>
+                        <p className="text-xs text-gray-600">
                           {clientProjects.length} projects • ${totalEarnings.toLocaleString()}
                         </p>
                       </div>
@@ -832,8 +909,8 @@ const Dashboard = () => {
                       <span className="text-xs text-green-600 font-medium">
                         {completedCount}/{clientProjects.length}
                       </span>
-                      <div className="w-6 h-6 bg-slate-100 group-hover:bg-purple-100 rounded-full flex items-center justify-center transition-colors">
-                        <span className="text-slate-600 group-hover:text-purple-600 text-xs">→</span>
+                      <div className="w-6 h-6 bg-emerald-100 group-hover:bg-emerald-200 rounded-full flex items-center justify-center transition-colors">
+                        <span className="text-emerald-600 group-hover:text-emerald-700 text-xs">→</span>
                       </div>
                     </div>
                   </button>
@@ -841,7 +918,7 @@ const Dashboard = () => {
               })}
               {getSortedProjects().length === 0 && (
                 <div className="text-center py-4">
-                  <p className="text-slate-500 text-sm">No clients for {timeFilter} view</p>
+                  <p className="text-gray-600 text-sm">No clients for {timeFilter} view</p>
                 </div>
               )}
             </div>

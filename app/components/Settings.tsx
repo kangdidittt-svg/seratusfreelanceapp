@@ -303,8 +303,8 @@ export default function Settings() {
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <div>
-          <h1 className="text-3xl font-bold text-white">Settings</h1>
-          <p className="text-white/60 mt-1">Manage your account preferences and settings</p>
+          <h1 className="text-3xl font-bold text-gray-800">Settings</h1>
+          <p className="text-gray-600 mt-1">Manage your account preferences and settings</p>
         </div>
         
         <motion.button
@@ -315,7 +315,7 @@ export default function Settings() {
           className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
             isSaving 
               ? 'bg-gray-500 cursor-not-allowed' 
-              : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 hover:shadow-lg'
+              : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 hover:shadow-lg shadow-md'
           } text-white`}
         >
           {isSaving ? (
@@ -350,7 +350,7 @@ export default function Settings() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="lg:w-64 bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md rounded-2xl p-6 border border-slate-700/50 h-fit"
+          className="lg:w-64 bg-gradient-to-br from-white/90 to-emerald-50/20 backdrop-blur-sm rounded-2xl p-6 border border-emerald-200/50 shadow-xl h-fit"
         >
           <nav className="space-y-2">
             {tabs.map((tab) => {
@@ -363,8 +363,8 @@ export default function Settings() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                     isActive 
-                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg' 
-                      : 'text-white/60 hover:text-white hover:bg-white/10'
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg' 
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50'
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -384,12 +384,12 @@ export default function Settings() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className="flex-1 bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md rounded-2xl p-8 border border-slate-700/50"
+          className="flex-1 bg-gradient-to-br from-white/90 to-emerald-50/20 backdrop-blur-sm rounded-2xl p-8 border border-emerald-200/50 shadow-xl"
         >
           {/* Profile Tab */}
           {activeTab === 'profile' && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-white mb-6">Profile Information</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">Profile Information</h2>
               
               {/* Profile Picture */}
               <div className="flex items-center space-x-6">
@@ -403,7 +403,7 @@ export default function Settings() {
                   />
                   <button 
                     onClick={() => document.getElementById('photoUpload')?.click()}
-                    className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white hover:shadow-lg transition-all duration-300"
+                    className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white hover:shadow-lg transition-all duration-300 hover:from-emerald-600 hover:to-teal-700"
                   >
                     <Camera size={16} />
                   </button>
@@ -416,11 +416,11 @@ export default function Settings() {
                   />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold text-lg">{profile.name}</h3>
-                  <p className="text-white/60">Freelance Developer</p>
+                  <h3 className="text-gray-800 font-semibold text-lg">{profile.name}</h3>
+                  <p className="text-gray-600">Freelance Developer</p>
                   <button 
                     onClick={() => document.getElementById('photoUpload')?.click()}
-                    className="text-purple-400 hover:text-purple-300 text-sm mt-1 transition-colors duration-300"
+                    className="text-emerald-500 hover:text-emerald-600 text-sm mt-1 transition-colors duration-300"
                   >
                     Change Photo
                   </button>
@@ -429,7 +429,7 @@ export default function Settings() {
 
               {/* Logo Upload */}
               <div className="space-y-4">
-                <h3 className="text-white font-semibold text-lg">Studio Logo</h3>
+                <h3 className="text-gray-800 font-semibold text-lg">Studio Logo</h3>
                 <div className="flex items-center space-x-6">
                   <div className="relative">
                     {logoUrl ? (
@@ -441,13 +441,13 @@ export default function Settings() {
                         className="w-24 h-24 rounded-2xl object-cover border-2 border-white/20"
                       />
                     ) : (
-                      <div className="w-24 h-24 rounded-2xl bg-white/10 border-2 border-dashed border-white/30 flex items-center justify-center">
-                        <span className="text-white/60 text-xs text-center">No Logo</span>
+                      <div className="w-24 h-24 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                        <span className="text-gray-400 text-xs text-center">No Logo</span>
                       </div>
                     )}
                     <button 
                       onClick={() => document.getElementById('logoUpload')?.click()}
-                      className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white hover:shadow-lg transition-all duration-300"
+                      className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white hover:shadow-lg transition-all duration-300 hover:from-emerald-600 hover:to-teal-700"
                     >
                       <Camera size={16} />
                     </button>
@@ -460,11 +460,11 @@ export default function Settings() {
                     />
                   </div>
                   <div>
-                    <h4 className="text-white font-medium">Upload Studio Logo</h4>
-                    <p className="text-white/60 text-sm">This will appear in the top bar</p>
+                    <h4 className="text-gray-800 font-medium">Upload Studio Logo</h4>
+                    <p className="text-gray-600 text-sm">This will appear in the top bar</p>
                     <button 
                       onClick={() => document.getElementById('logoUpload')?.click()}
-                      className="text-blue-400 hover:text-blue-300 text-sm mt-1 transition-colors duration-300"
+                      className="text-emerald-500 hover:text-emerald-600 text-sm mt-1 transition-colors duration-300"
                     >
                       {logoUrl ? 'Change Logo' : 'Upload Logo'}
                     </button>
@@ -475,7 +475,7 @@ export default function Settings() {
               {/* Form Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-gray-800 font-medium mb-2">
                     <User className="inline mr-2" size={16} />
                     Full Name
                   </label>
@@ -483,12 +483,12 @@ export default function Settings() {
                     type="text"
                     value={profile.name}
                     onChange={(e) => handleProfileChange('name', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-gray-800 font-medium mb-2">
                     <Mail className="inline mr-2" size={16} />
                     Email Address
                   </label>
@@ -496,12 +496,12 @@ export default function Settings() {
                     type="email"
                     value={profile.email}
                     onChange={(e) => handleProfileChange('email', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-gray-800 font-medium mb-2">
                     <Phone className="inline mr-2" size={16} />
                     Phone Number
                   </label>
@@ -509,12 +509,12 @@ export default function Settings() {
                     type="tel"
                     value={profile.phone}
                     onChange={(e) => handleProfileChange('phone', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-gray-800 font-medium mb-2">
                     <MapPin className="inline mr-2" size={16} />
                     Location
                   </label>
@@ -522,12 +522,12 @@ export default function Settings() {
                     type="text"
                     value={profile.location}
                     onChange={(e) => handleProfileChange('location', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-gray-800 font-medium mb-2">
                     <DollarSign className="inline mr-2" size={16} />
                     Hourly Rate
                   </label>
@@ -535,37 +535,37 @@ export default function Settings() {
                     type="number"
                     value={profile.hourlyRate}
                     onChange={(e) => handleProfileChange('hourlyRate', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-gray-800 font-medium mb-2">
                     <Globe className="inline mr-2" size={16} />
                     Currency
                   </label>
                   <select
                     value={profile.currency}
                     onChange={(e) => handleProfileChange('currency', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
                   >
-                    <option value="USD" className="bg-gray-800">USD - US Dollar</option>
-                    <option value="EUR" className="bg-gray-800">EUR - Euro</option>
-                    <option value="GBP" className="bg-gray-800">GBP - British Pound</option>
-                    <option value="CAD" className="bg-gray-800">CAD - Canadian Dollar</option>
+                    <option value="USD" className="bg-white">USD - US Dollar</option>
+                    <option value="EUR" className="bg-white">EUR - Euro</option>
+                    <option value="GBP" className="bg-white">GBP - British Pound</option>
+                    <option value="CAD" className="bg-white">CAD - Canadian Dollar</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-white font-medium mb-2">
+                <label className="block text-gray-800 font-medium mb-2">
                   Bio
                 </label>
                 <textarea
                   value={profile.bio}
                   onChange={(e) => handleProfileChange('bio', e.target.value)}
                   rows={4}
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 resize-none"
+                  className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 resize-none"
                   placeholder="Tell clients about yourself..."
                 />
               </div>
@@ -575,16 +575,16 @@ export default function Settings() {
           {/* Notifications Tab */}
           {activeTab === 'notifications' && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-white mb-6">Notification Preferences</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">Notification Preferences</h2>
               
               <div className="space-y-4">
                 {Object.entries(notifications).map(([key, value]) => (
-                  <div key={key} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                  <div key={key} className="flex items-center justify-between p-4 bg-gradient-to-r from-white/80 to-emerald-50/30 backdrop-blur-sm rounded-xl border border-emerald-200/30">
                     <div>
-                      <h3 className="text-white font-medium capitalize">
+                      <h3 className="text-gray-800 font-medium capitalize">
                         {key.replace(/([A-Z])/g, ' $1').trim()}
                       </h3>
-                      <p className="text-white/60 text-sm">
+                      <p className="text-gray-600 text-sm">
                         {key === 'emailNotifications' && 'Receive notifications via email'}
                         {key === 'pushNotifications' && 'Receive push notifications on your device'}
                         {key === 'projectUpdates' && 'Get notified about project status changes'}
@@ -595,7 +595,7 @@ export default function Settings() {
                     <button
                       onClick={() => handleNotificationChange(key as keyof NotificationSettings)}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
-                        value ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 'bg-white/20'
+                        value ? 'bg-gradient-to-r from-emerald-500 to-teal-600' : 'bg-gray-200'
                       }`}
                     >
                       <span
@@ -613,24 +613,24 @@ export default function Settings() {
           {/* Categories Tab */}
           {activeTab === 'categories' && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-white mb-6">Project Categories</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">Project Categories</h2>
               
               {/* Add New Category */}
-              <div className="bg-white/5 rounded-xl p-6">
-                <h3 className="text-white font-medium mb-4">Add New Category</h3>
+              <div className="bg-gradient-to-r from-white/80 to-emerald-50/30 backdrop-blur-sm rounded-xl p-6 border border-emerald-200/30">
+                <h3 className="text-gray-800 font-medium mb-4">Add New Category</h3>
                 <div className="flex gap-3">
                   <input
                     type="text"
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
                     placeholder="Enter category name"
-                    className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
+                    className="flex-1 px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
                     onKeyPress={(e) => e.key === 'Enter' && handleAddCategory()}
                   />
                   <button
                     onClick={handleAddCategory}
                     disabled={isLoading || !newCategory.trim()}
-                    className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                    className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-md"
                   >
                     {isLoading ? 'Adding...' : 'Add'}
                   </button>
@@ -639,21 +639,21 @@ export default function Settings() {
 
               {/* Categories List */}
               <div className="space-y-3">
-                <h3 className="text-white font-medium">Existing Categories</h3>
+                <h3 className="text-gray-800 font-medium">Existing Categories</h3>
                 {categories.length === 0 ? (
-                  <div className="text-white/60 text-center py-8">
+                  <div className="text-gray-600 text-center py-8">
                     No categories yet. Add your first category above.
                   </div>
                 ) : (
                   categories.map((category, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                    <div key={index} className="flex items-center justify-between p-4 bg-gradient-to-r from-white/80 to-emerald-50/30 backdrop-blur-sm rounded-xl border border-emerald-200/30">
                       {editingCategory?.index === index ? (
                         <div className="flex-1 flex gap-3">
                           <input
                             type="text"
                             value={editingCategory.value}
                             onChange={(e) => setEditingCategory({ ...editingCategory, value: e.target.value })}
-                            className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             onKeyPress={(e) => {
                               if (e.key === 'Enter') {
                                 handleEditCategory(category, editingCategory.value)
@@ -666,7 +666,7 @@ export default function Settings() {
                           <button
                             onClick={() => handleEditCategory(category, editingCategory.value)}
                             disabled={isLoading}
-                            className="px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 transition-colors duration-300"
+                            className="px-3 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 disabled:opacity-50 transition-colors duration-300"
                           >
                             Save
                           </button>
@@ -679,11 +679,11 @@ export default function Settings() {
                         </div>
                       ) : (
                         <>
-                          <span className="text-white font-medium">{category}</span>
+                          <span className="text-gray-800 font-medium">{category}</span>
                           <div className="flex gap-2">
                             <button
                               onClick={() => setEditingCategory({ index, value: category })}
-                              className="px-3 py-1 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                              className="px-3 py-1 text-sm bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors duration-300"
                             >
                               Edit
                             </button>
@@ -713,7 +713,7 @@ export default function Settings() {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 max-w-md mx-4 shadow-2xl"
+            className="bg-white border border-gray-200 rounded-2xl p-8 max-w-md mx-4 shadow-2xl"
           >
             <div className="text-center">
               <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -722,9 +722,9 @@ export default function Settings() {
                 </svg>
               </div>
               
-              <h3 className="text-xl font-semibold text-white mb-2">Delete Category</h3>
-              <p className="text-white/70 mb-6">
-                 Are you sure you want to delete <span className="font-medium text-white">"{categoryToDelete}"</span>?
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Delete Category</h3>
+              <p className="text-gray-600 mb-6">
+                 Are you sure you want to delete <span className="font-medium text-gray-800">"{categoryToDelete}"</span>?
                  <br />
                  <span className="text-sm">All projects with this category will be moved to "Other".</span>
                </p>
@@ -732,14 +732,14 @@ export default function Settings() {
               <div className="flex gap-3">
                 <button
                   onClick={cancelDeleteCategory}
-                  className="flex-1 px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-medium transition-all duration-300 border border-white/20"
+                  className="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl font-medium transition-all duration-300 border border-gray-200"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmDeleteCategory}
                   disabled={isLoading}
-                  className="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? 'Deleting...' : 'Delete'}
                 </button>

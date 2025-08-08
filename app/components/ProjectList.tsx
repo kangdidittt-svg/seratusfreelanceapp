@@ -123,7 +123,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-500"></div>
       </div>
     );
   }
@@ -132,17 +132,17 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-white">Projects</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Projects</h2>
         <button
           onClick={onAddProject}
-          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 hover:shadow-lg text-white px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-300 font-medium"
+          className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 hover:shadow-lg text-white px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-300 font-medium shadow-md"
         >
           <FiPlus /> Add New Project
         </button>
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-gradient-to-r from-white/90 to-emerald-50/30 backdrop-blur-sm p-4 rounded-lg shadow-lg border border-emerald-200/50">
         <div className="flex flex-wrap gap-4">
           {/* Search */}
           <div className="flex-1 min-w-64">
@@ -153,7 +153,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
                 placeholder="Search projects..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-emerald-300/50 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white/80 backdrop-blur-sm"
               />
             </div>
           </div>
@@ -163,7 +163,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-emerald-300/50 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white/80 backdrop-blur-sm"
             >
               <option value="all">All Status</option>
               <option value="Pending">Pending</option>
@@ -178,7 +178,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-emerald-300/50 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white/80 backdrop-blur-sm"
             >
               <option value="title">Sort by Title</option>
               <option value="client">Sort by Client</option>
@@ -198,7 +198,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+            className="bg-gradient-to-br from-white/90 to-emerald-50/20 backdrop-blur-sm rounded-lg shadow-lg border border-emerald-200/50 hover:shadow-xl hover:border-emerald-300/70 transition-all duration-300"
           >
             <div className="p-6">
               {/* Project Header */}
@@ -223,7 +223,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                    className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${project.progress}%` }}
                   ></div>
                 </div>
@@ -249,14 +249,14 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
                 {project.status !== 'Completed' && (
                   <button
                     onClick={() => handleCompleteProject(project._id)}
-                    className="flex-1 bg-green-50 hover:bg-green-100 text-green-600 px-3 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                    className="flex-1 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 text-green-600 px-3 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 border border-green-200/50"
                   >
                     <FiCheck size={16} /> Complete
                   </button>
                 )}
                 <button
                   onClick={() => onEditProject(project)}
-                  className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                  className="flex-1 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-emerald-600 px-3 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 border border-emerald-200/50"
                 >
                   <FiEdit size={16} /> Edit
                 </button>
@@ -288,7 +288,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
           {!searchTerm && statusFilter === 'all' && (
             <button
               onClick={onAddProject}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 hover:shadow-lg text-white px-6 py-3 rounded-xl inline-flex items-center gap-2 transition-all duration-300 font-medium"
+              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 hover:shadow-lg text-white px-6 py-3 rounded-xl inline-flex items-center gap-2 transition-all duration-300 font-medium shadow-md"
             >
               <FiPlus /> Add Your First Project
             </button>

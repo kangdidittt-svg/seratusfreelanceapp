@@ -174,8 +174,8 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
         transition={{ duration: 0.5 }}
         className="text-center"
       >
-        <h1 className="text-3xl font-bold text-white mb-2">Add New Project</h1>
-        <p className="text-white/60">Create a new project and start tracking your progress</p>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">Add New Project</h1>
+        <p className="text-gray-600">Create a new project and start tracking your progress</p>
       </motion.div>
 
       {/* Form */}
@@ -183,13 +183,13 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md rounded-2xl p-8 border border-slate-700/50"
+        className="bg-gradient-to-br from-white/90 to-emerald-50/20 backdrop-blur-sm rounded-2xl p-8 border border-emerald-200/50 shadow-xl"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Project Title & Client */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-white font-medium mb-2">
+              <label className="block text-gray-700 font-medium mb-2">
                 <FileText className="inline mr-2" size={16} />
                 Project Title *
               </label>
@@ -198,8 +198,8 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 ${
-                  errors.title ? 'border-red-500' : 'border-white/20'
+                className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 ${
+                  errors.title ? 'border-red-500' : 'border-emerald-300/50'
                 }`}
                 placeholder="Enter project title"
               />
@@ -212,7 +212,7 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
             </div>
 
             <div>
-              <label className="block text-white font-medium mb-2">
+              <label className="block text-gray-700 font-medium mb-2">
                 <User className="inline mr-2" size={16} />
                 Client Name *
               </label>
@@ -221,8 +221,8 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
                 name="client"
                 value={formData.client}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 ${
-                  errors.client ? 'border-red-500' : 'border-white/20'
+                className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 ${
+                  errors.client ? 'border-red-500' : 'border-emerald-300/50'
                 }`}
                 placeholder="Enter client name"
               />
@@ -237,7 +237,7 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
 
           {/* Description */}
           <div>
-            <label className="block text-white font-medium mb-2">
+            <label className="block text-gray-700 font-medium mb-2">
               Project Description
             </label>
             <textarea
@@ -245,7 +245,7 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
               value={formData.description}
               onChange={handleInputChange}
               rows={4}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 resize-none"
+              className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 resize-none"
               placeholder="Describe your project..."
             />
           </div>
@@ -253,7 +253,7 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
           {/* Category & Priority */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-white font-medium mb-2">
+              <label className="block text-gray-700 font-medium mb-2">
                 <Tag className="inline mr-2" size={16} />
                 Category *
               </label>
@@ -261,13 +261,13 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 ${
-                  errors.category ? 'border-red-500' : 'border-white/20'
+                className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 ${
+                  errors.category ? 'border-red-500' : 'border-emerald-300/50'
                 }`}
               >
                 <option value="">Select category</option>
                 {categories.map(category => (
-                  <option key={category} value={category} className="bg-gray-800">
+                  <option key={category} value={category} className="bg-white">
                     {category}
                   </option>
                 ))}
@@ -281,17 +281,17 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
             </div>
 
             <div>
-              <label className="block text-white font-medium mb-2">
+              <label className="block text-gray-700 font-medium mb-2">
                 Priority
               </label>
               <select
                 name="priority"
                 value={formData.priority}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
+                className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
               >
                 {priorities.map(priority => (
-                  <option key={priority} value={priority} className="bg-gray-800">
+                  <option key={priority} value={priority} className="bg-white">
                     {priority}
                   </option>
                 ))}
@@ -302,7 +302,7 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
           {/* Budget & Deadline */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-white font-medium mb-2">
+              <label className="block text-gray-700 font-medium mb-2">
                 <DollarSign className="inline mr-2" size={16} />
                 Budget *
               </label>
@@ -311,8 +311,8 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
                 name="budget"
                 value={formData.budget}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 ${
-                  errors.budget ? 'border-red-500' : 'border-white/20'
+                className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 ${
+                  errors.budget ? 'border-red-500' : 'border-emerald-300/50'
                 }`}
                 placeholder="0.00"
                 min="0"
@@ -327,7 +327,7 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
             </div>
 
             <div>
-              <label className="block text-white font-medium mb-2">
+              <label className="block text-gray-700 font-medium mb-2">
                 <Calendar className="inline mr-2" size={16} />
                 Deadline *
               </label>
@@ -336,8 +336,8 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
                 name="deadline"
                 value={formData.deadline}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 ${
-                  errors.deadline ? 'border-red-500' : 'border-white/20'
+                className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 ${
+                  errors.deadline ? 'border-red-500' : 'border-emerald-300/50'
                 }`}
               />
               {errors.deadline && (
@@ -351,17 +351,17 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
 
           {/* Status */}
           <div>
-            <label className="block text-white font-medium mb-2">
+            <label className="block text-gray-700 font-medium mb-2">
               Initial Status
             </label>
             <select
               name="status"
               value={formData.status}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
+              className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
             >
               {statuses.map(status => (
-                <option key={status} value={status} className="bg-gray-800">
+                <option key={status} value={status} className="bg-white">
                   {status}
                 </option>
               ))}
@@ -377,8 +377,8 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
               whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
               className={`flex-1 flex items-center justify-center space-x-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
                 isSubmitting 
-                  ? 'bg-gray-500 cursor-not-allowed' 
-                  : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 hover:shadow-lg'
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 hover:shadow-lg shadow-md'
               } text-white`}
             >
               {isSubmitting ? (
@@ -400,7 +400,7 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
               disabled={isSubmitting}
               whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
               whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-              className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <X size={20} />
               <span>Reset</span>
@@ -414,13 +414,13 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-md rounded-2xl p-6 border border-blue-500/20"
+        className="bg-gradient-to-br from-emerald-50/80 to-teal-50/40 backdrop-blur-sm rounded-2xl p-6 border border-emerald-200/50 shadow-lg"
       >
-        <h3 className="text-white font-semibold mb-3 flex items-center">
+        <h3 className="text-gray-800 font-semibold mb-3 flex items-center">
           <AlertCircle className="mr-2" size={20} />
           Tips for Better Project Management
         </h3>
-        <ul className="text-white/80 space-y-2 text-sm">
+        <ul className="text-gray-600 space-y-2 text-sm">
           <li>• Be specific with project titles to easily identify them later</li>
           <li>• Set realistic deadlines with some buffer time</li>
           <li>• Choose the appropriate priority level to focus on important projects</li>
@@ -440,19 +440,19 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
-            className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md rounded-2xl p-8 border border-slate-700/50 max-w-md w-full mx-4"
+            className="bg-white rounded-2xl p-8 border border-gray-200 shadow-xl max-w-md w-full mx-4"
           >
             <div className="text-center">
               <div className="mx-auto flex items-center justify-center w-16 h-16 bg-green-500/20 rounded-full mb-4">
                 <CheckCircle className="w-8 h-8 text-green-400" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
                 Project Created Successfully!
               </h3>
-              <p className="text-white/70 mb-6">
+              <p className="text-gray-600 mb-6">
                 Your new project has been added to your workspace.
               </p>
-              <div className="w-full bg-white/10 rounded-full h-1 overflow-hidden">
+              <div className="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
                 <motion.div
                   initial={{ width: "0%" }}
                   animate={{ width: "100%" }}

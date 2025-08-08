@@ -52,12 +52,12 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout }: SidebarPr
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="w-20 bg-white/10 backdrop-blur-md border-r border-white/20 flex flex-col items-center py-6 relative z-20"
+      className="w-20 bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-700 border-r border-emerald-400/30 shadow-2xl flex flex-col items-center py-6 relative z-20 backdrop-blur-sm"
     >
       {/* Logo/Brand */}
       <div className="mb-8">
-        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-          <span className="text-white font-bold text-xl">F</span>
+        <div className="w-12 h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg border border-white/20">
+          <span className="text-white font-bold text-xl drop-shadow-lg">F</span>
         </div>
       </div>
 
@@ -73,8 +73,8 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout }: SidebarPr
               onClick={() => setActiveTab(item.id)}
               className={`relative w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 group ${
                 isActive 
-                  ? 'bg-white/20 text-white shadow-lg' 
-                  : 'text-white/60 hover:text-white hover:bg-white/10'
+                  ? 'bg-gradient-to-br from-white/30 to-white/10 text-white shadow-lg backdrop-blur-sm border border-white/20' 
+                  : 'text-white/70 hover:text-white hover:bg-white/10 hover:backdrop-blur-sm'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -82,20 +82,20 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout }: SidebarPr
               {isActive && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl"
+                  className="absolute inset-0 bg-gradient-to-br from-white/30 to-white/10 rounded-xl backdrop-blur-sm border border-white/20"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
               
               <Icon 
                 size={20} 
-                className={`relative z-10 transition-colors duration-300 ${
+                className={`relative z-10 transition-colors duration-300 drop-shadow-sm ${
                   isActive ? 'text-white' : 'group-hover:text-white'
                 }`} 
               />
               
               {/* Tooltip */}
-              <div className="absolute left-16 bg-black/80 text-white text-sm px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+              <div className="absolute left-16 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap z-50 shadow-xl border border-emerald-400/30 backdrop-blur-sm">
                 {item.label}
               </div>
             </motion.button>
@@ -105,24 +105,24 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout }: SidebarPr
         {/* Profile Section - moved here after Settings */}
         <div className="space-y-4 pt-4">
           <motion.button
-            className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all duration-300 group"
+            className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center text-white/70 hover:text-red-300 hover:bg-red-500/20 transition-all duration-300 group border border-white/10"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onLogout}
           >
-            <LogOut size={20} />
-            <div className="absolute left-16 bg-black/80 text-white text-sm px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+            <LogOut size={20} className="drop-shadow-sm" />
+            <div className="absolute left-16 bg-gradient-to-r from-red-500 to-red-600 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap z-50 shadow-xl border border-red-400/30 backdrop-blur-sm">
               Logout
             </div>
           </motion.button>
           
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center overflow-hidden">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/30 to-white/10 border-2 border-white/20 flex items-center justify-center overflow-hidden backdrop-blur-sm shadow-lg">
             <Image 
               src={profilePhoto} 
               alt="Profile" 
               width={48}
               height={48}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover rounded-lg"
             />
           </div>
         </div>
