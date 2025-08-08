@@ -613,7 +613,7 @@ const Dashboard = () => {
           <select 
             value={timeFilter}
             onChange={(e) => setTimeFilter(e.target.value)}
-            className="bg-gradient-to-r from-white to-emerald-50/50 border border-emerald-200/50 rounded-xl px-4 py-2 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm backdrop-blur-sm"
+            className="bg-white border border-emerald-200 rounded-xl px-4 py-2 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             <option value="monthly">Monthly</option>
             <option value="weekly">Weekly</option>

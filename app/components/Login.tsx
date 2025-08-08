@@ -94,7 +94,7 @@ export default function Login({ onLogin }: LoginProps) {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-gradient-to-r from-gray-50 to-emerald-50/50 border border-emerald-200/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 focus:bg-white transition-all duration-300 shadow-sm"
+                  className="w-full pl-12 pr-4 py-3 bg-white border border-emerald-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all duration-300"
                   placeholder="Enter your username"
                   required
                 />
@@ -116,7 +116,7 @@ export default function Login({ onLogin }: LoginProps) {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3 bg-gradient-to-r from-gray-50 to-emerald-50/50 border border-emerald-200/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 focus:bg-white transition-all duration-300 shadow-sm"
+                  className="w-full pl-12 pr-12 py-3 bg-white border border-emerald-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all duration-300"
                   placeholder="Enter your password"
                   required
                 />
