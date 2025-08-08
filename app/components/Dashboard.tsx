@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { 
   FolderOpen, 
@@ -206,11 +206,48 @@ const Dashboard = () => {
     return chartDataByPeriod[timeFilter as keyof typeof chartDataByPeriod] || chartDataByPeriod.monthly
   }
 
-  useEffect(() => {
-    fetchProjects()
-  }, [])
+  // Sort projects based on time filter
+  const getSortedProjects = () => {
+    const sortedProjects = [...projects]
+    
+    switch (timeFilter) {
+      case 'weekly':
+        // Sort by most recent (within last 7 days)
+        return sortedProjects
+          .filter(project => {
+            const projectDate = new Date(project.deadline)
+            const weekAgo = new Date()
+            weekAgo.setDate(weekAgo.getDate() - 7)
+            return projectDate >= weekAgo
+          })
+          .sort((a, b) => new Date(b.deadline).getTime() - new Date(a.deadline).getTime())
+      
+      case 'yearly':
+        // Sort by year, then by most recent
+        return sortedProjects
+          .sort((a, b) => {
+            const yearA = new Date(a.deadline).getFullYear()
+            const yearB = new Date(b.deadline).getFullYear()
+            if (yearA !== yearB) return yearB - yearA
+            return new Date(b.deadline).getTime() - new Date(a.deadline).getTime()
+          })
+      
+      case 'monthly':
+      default:
+        // Sort by month, then by most recent
+        return sortedProjects
+          .sort((a, b) => {
+            const dateA = new Date(a.deadline)
+            const dateB = new Date(b.deadline)
+            const monthA = dateA.getFullYear() * 12 + dateA.getMonth()
+            const monthB = dateB.getFullYear() * 12 + dateB.getMonth()
+            if (monthA !== monthB) return monthB - monthA
+            return dateB.getTime() - dateA.getTime()
+          })
+    }
+  }
 
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       const response = await fetch('/api/projects')
       if (response.ok) {
@@ -223,9 +260,14 @@ const Dashboard = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchProjects()
+  }, [fetchProjects])
 
   const calculateStats = (projectsData: Project[]) => {
+
     const totalProjects = projectsData.length
     const totalIncome = projectsData.reduce((sum, project) => sum + project.budget, 0)
     const completedProjects = projectsData.filter(p => p.status === 'Completed').length
@@ -258,7 +300,7 @@ const Dashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Dashboard</h1>
-          <p className="text-white/80">Welcome back! Here's what's happening with your projects.</p>
+          <p className="text-white/80">Welcome back! Here&apos;s what&apos;s happening with your projects.</p>
         </div>
         <div className="flex items-center gap-4">
           <select 
@@ -270,9 +312,6 @@ const Dashboard = () => {
             <option value="weekly">Weekly</option>
             <option value="yearly">Yearly</option>
           </select>
-          <button className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-2 rounded-2xl text-sm font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-lg hover:shadow-xl">
-            Export Data
-          </button>
         </div>
       </div>
 
@@ -360,7 +399,7 @@ const Dashboard = () => {
             <span className="text-indigo-600 text-sm font-medium">+15%</span>
           </div>
           <h3 className="text-slate-600 text-sm font-medium mb-1">Active Projects</h3>
-          <p className="text-2xl font-bold text-slate-800">{projects.filter(p => p.status === 'In Progress').length}</p>
+          <p className="text-2xl font-bold text-slate-800">{getSortedProjects().filter(p => p.status === 'In Progress').length}</p>
         </motion.div>
       </div>
 
@@ -430,7 +469,7 @@ const Dashboard = () => {
               </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {projects.slice(0, 6).map((project, index) => {
+              {getSortedProjects().slice(0, 6).map((project, index) => {
                 const progress = project.status === 'Completed' ? 100 : 
                                 project.status === 'In Progress' ? 60 : 
                                 project.status === 'On Hold' ? 30 : 10;
@@ -477,9 +516,10 @@ const Dashboard = () => {
                   </motion.div>
                 );
               })}
-              {projects.length === 0 && (
+              {getSortedProjects().length === 0 && (
                 <div className="col-span-full text-center py-8">
-                  <p className="text-slate-600">No projects found</p>
+                  <FolderOpen className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                  <p className="text-slate-600">No projects found for {timeFilter} view</p>
                 </div>
               )}
             </div>
@@ -502,9 +542,9 @@ const Dashboard = () => {
               </button>
             </div>
             <div className="space-y-3">
-              {/* Generate unique clients from projects */}
-              {Array.from(new Set(projects.map(p => p.client))).slice(0, 5).map((clientName, index) => {
-                const clientProjects = projects.filter(p => p.client === clientName);
+              {/* Generate unique clients from sorted projects */}
+              {Array.from(new Set(getSortedProjects().map(p => p.client))).slice(0, 5).map((clientName, index) => {
+                const clientProjects = getSortedProjects().filter(p => p.client === clientName);
                 const totalEarnings = clientProjects.reduce((sum, p) => sum + p.budget, 0);
                 const completedCount = clientProjects.filter(p => p.status === 'Completed').length;
                 const avatars = ['👨‍💼', '👩‍💼', '🧑‍💻', '👨‍🎨', '👩‍🔬'];
@@ -540,9 +580,9 @@ const Dashboard = () => {
                   </button>
                 );
               })}
-              {projects.length === 0 && (
+              {getSortedProjects().length === 0 && (
                 <div className="text-center py-4">
-                  <p className="text-slate-500 text-sm">No clients yet</p>
+                  <p className="text-slate-500 text-sm">No clients for {timeFilter} view</p>
                 </div>
               )}
             </div>

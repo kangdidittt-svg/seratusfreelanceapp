@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { 
   User, 
   Bell, 
@@ -383,9 +384,11 @@ export default function Settings() {
               {/* Profile Picture */}
               <div className="flex items-center space-x-6">
                 <div className="relative">
-                  <img
+                  <Image
                     src={profilePhoto}
                     alt="Profile"
+                    width={96}
+                    height={96}
                     className="w-24 h-24 rounded-2xl object-cover"
                   />
                   <button 
@@ -420,9 +423,11 @@ export default function Settings() {
                 <div className="flex items-center space-x-6">
                   <div className="relative">
                     {logoUrl ? (
-                      <img
+                      <Image
                         src={logoUrl}
                         alt="Studio Logo"
+                        width={96}
+                        height={96}
                         className="w-24 h-24 rounded-2xl object-cover border-2 border-white/20"
                       />
                     ) : (

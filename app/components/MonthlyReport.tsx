@@ -164,7 +164,7 @@ export default function MonthlyReport() {
   const clientData = (clientDataByMonth as any)[selectedMonth] || clientDataByMonth['June']
 
   const handleExport = () => {
-    // Create Excel-compatible CSV with proper formatting
+    // Create Excel-compatible CSV with only requested data
     const csvLines = [
       // Header
       'Monthly Freelance Report',
@@ -172,37 +172,22 @@ export default function MonthlyReport() {
       `Generated: ${new Date().toLocaleDateString()}`,
       '',
       
-      // Summary Section
-      'SUMMARY',
+      // Total Earnings
+      'TOTAL EARNINGS',
       'Metric,Value',
       `Total Earnings,$${currentMonthData.totalEarnings.toLocaleString()}`,
+      '',
+      
+      // Projects Completed
+      'PROJECTS COMPLETED',
+      'Metric,Value',
       `Total Projects,${currentMonthData.totalProjects}`,
-      `Total Hours,${currentMonthData.totalHours}`,
-      `Average Project Value,$${currentMonthData.avgProjectValue}`,
-      `Completion Rate,${currentMonthData.completionRate}%`,
-      `Growth Rate,${currentMonthData.growthRate}%`,
       '',
       
-      // Monthly Performance Section
-      'MONTHLY PERFORMANCE',
-      'Month,Earnings,Projects,Hours,Completion Rate',
-      ...monthlyData.map(item => 
-        `${item.month},$${item.earnings},${item.projects},${item.hours},${item.completionRate}%`
-      ),
-      '',
-      
-      // Category Breakdown Section
+      // Category Breakdown
       'CATEGORY BREAKDOWN',
       'Category,Percentage',
-      ...categoryData.map((item: any) => `${item.name},${item.value}%`),
-      '',
-      
-      // Client Performance Section
-      'CLIENT PERFORMANCE',
-      'Client,Projects,Earnings,Growth',
-      ...clientData.map((item: any) => 
-        `${item.name},${item.projects},$${item.earnings.toLocaleString()},${item.growth}%`
-      )
+      ...categoryData.map((item: any) => `${item.name},${item.value}%`)
     ]
 
     // Convert to CSV format
@@ -221,8 +206,6 @@ export default function MonthlyReport() {
     link.click()
     document.body.removeChild(link)
   }
-
-
 
   return (
     <div className="space-y-6">

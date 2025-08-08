@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Save, 
@@ -52,34 +52,7 @@ export default function EditProject({ projectId, onClose, onProjectUpdated }: Ed
   const [isLoading, setIsLoading] = useState(true)
   const [categories, setCategories] = useState<string[]>([])
 
-  useEffect(() => {
-    fetchProject()
-    fetchCategories()
-  }, [projectId])
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/categories')
-      if (response.ok) {
-        const data = await response.json()
-        setCategories(data.categories)
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-      // Fallback to default categories
-      setCategories([
-        'Web Development',
-        'Mobile App',
-        'UI/UX Design',
-        'Branding',
-        'Marketing',
-        'Consulting',
-        'Other'
-      ])
-    }
-  }
-
-  const fetchProject = async () => {
+  const fetchProject = useCallback(async () => {
     try {
       const response = await fetch(`/api/projects/${projectId}`)
       if (response.ok) {
@@ -106,8 +79,34 @@ export default function EditProject({ projectId, onClose, onProjectUpdated }: Ed
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [projectId, onClose])
 
+  useEffect(() => {
+    fetchProject()
+    fetchCategories()
+  }, [projectId, fetchProject])
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/categories')
+      if (response.ok) {
+        const data = await response.json()
+        setCategories(data.categories)
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+      // Fallback to default categories
+      setCategories([
+        'Web Development',
+        'Mobile App',
+        'UI/UX Design',
+        'Branding',
+        'Marketing',
+        'Consulting',
+        'Other'
+      ])
+    }
+  }
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))

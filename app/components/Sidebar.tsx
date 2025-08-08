@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { 
   Home, 
   Plus, 
@@ -117,9 +118,11 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout }: SidebarPr
         </motion.button>
         
         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center overflow-hidden">
-          <img 
+          <Image 
             src={profilePhoto} 
             alt="Profile" 
+            width={48}
+            height={48}
             className="w-full h-full object-cover"
           />
         </div>
