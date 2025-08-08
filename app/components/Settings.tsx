@@ -724,9 +724,9 @@ export default function Settings() {
               
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Delete Category</h3>
               <p className="text-gray-600 mb-6">
-                 Are you sure you want to delete <span className="font-medium text-gray-800">"{categoryToDelete}"</span>?
+                 Are you sure you want to delete <span className="font-medium text-gray-800">&quot;{categoryToDelete}&quot;</span>?
                  <br />
-                 <span className="text-sm">All projects with this category will be moved to "Other".</span>
+                 <span className="text-sm">All projects with this category will be moved to &quot;Other&quot;.</span>
                </p>
               
               <div className="flex gap-3">

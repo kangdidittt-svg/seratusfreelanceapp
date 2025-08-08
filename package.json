@@ -12,8 +12,7 @@
     "deploy:docker": "docker-compose up --build -d",
     "health": "curl -f http://localhost:3000/api/health || exit 1",
     "version": "curl -s http://localhost:3000/api/version | jq",
-    "test:build": "npm run build && npm run start &",
-    "postinstall": "npm run build"
+    "test:build": "npm run build && npm run start &"
   },
   "dependencies": {
 
