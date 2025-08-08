@@ -1,7 +1,41 @@
 const { MongoClient } = require('mongodb');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 
-const uri = 'mongodb://admin:admin123@localhost:27017/freelance-tracker-new?authSource=admin';
+// Read .env.local file manually
+function loadEnvFile() {
+  try {
+    const envPath = path.join(__dirname, '.env.local');
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    const envVars = {};
+    
+    envContent.split('\n').forEach(line => {
+      const trimmedLine = line.trim();
+      if (trimmedLine && !trimmedLine.startsWith('#')) {
+        const [key, ...valueParts] = trimmedLine.split('=');
+        if (key && valueParts.length > 0) {
+          const value = valueParts.join('=').replace(/^["']|["']$/g, '');
+          envVars[key.trim()] = value;
+        }
+      }
+    });
+    
+    return envVars;
+  } catch (error) {
+    console.error('Error loading .env.local:', error.message);
+    return {};
+  }
+}
+
+// Load environment variables
+const envVars = loadEnvFile();
+const uri = envVars.MONGODB_URI;
+
+if (!uri) {
+  console.error('❌ MONGODB_URI not found in .env.local');
+  process.exit(1);
+}
 
 async function fixAdminUser() {
   const client = new MongoClient(uri);
@@ -10,7 +44,9 @@ async function fixAdminUser() {
     await client.connect();
     console.log('✅ Connected to MongoDB');
     
-    const db = client.db('freelance-tracker-new');
+    // Extract database name from URI or use default
+    const dbName = envVars.DB_NAME || 'freelance-tracker-new';
+    const db = client.db(dbName);
     const users = db.collection('users');
     
     // Delete existing admin user

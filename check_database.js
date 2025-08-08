@@ -1,15 +1,51 @@
 const { MongoClient, ObjectId } = require('mongodb');
+const fs = require('fs');
+const path = require('path');
+
+// Read .env.local file manually
+function loadEnvFile() {
+  try {
+    const envPath = path.join(__dirname, '.env.local');
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    const envVars = {};
+    
+    envContent.split('\n').forEach(line => {
+      const trimmedLine = line.trim();
+      if (trimmedLine && !trimmedLine.startsWith('#')) {
+        const [key, ...valueParts] = trimmedLine.split('=');
+        if (key && valueParts.length > 0) {
+          const value = valueParts.join('=').replace(/^["']|["']$/g, '');
+          envVars[key.trim()] = value;
+        }
+      }
+    });
+    
+    return envVars;
+  } catch (error) {
+    console.error('Error loading .env.local:', error.message);
+    return {};
+  }
+}
 
 async function checkDatabase() {
-  // Use the same URI as the application
-  const uri = 'mongodb://admin:admin123@localhost:27017/freelance-tracker-new?authSource=admin';
+  // Load environment variables from .env.local
+  const envVars = loadEnvFile();
+  const uri = envVars.MONGODB_URI;
+  
+  if (!uri) {
+    console.error('❌ MONGODB_URI not found in .env.local');
+    return;
+  }
+  
   const client = new MongoClient(uri);
   
   try {
     await client.connect();
-    console.log('✅ Connected to MongoDB (freelance-tracker-new)');
+    console.log('✅ Connected to MongoDB');
     
-    const db = client.db('freelance-tracker-new');
+    // Extract database name from URI or use default
+    const dbName = envVars.DB_NAME || 'freelance-tracker-new';
+    const db = client.db(dbName);
     
     // Check users collection
     const usersCount = await db.collection('users').countDocuments();

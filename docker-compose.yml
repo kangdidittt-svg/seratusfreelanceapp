@@ -9,7 +9,11 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - MONGODB_URI=mongodb://mongo:27017/freelance-tracker
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongo:27017/freelance-tracker}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+    env_file:
+      - .env.local
     depends_on:
       - mongo
     networks:
@@ -21,7 +25,7 @@ services:
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_DATABASE=freelance-tracker
+      - MONGO_INITDB_DATABASE=${DB_NAME:-freelance-tracker}
     volumes:
       - mongo-data:/data/db
     networks:

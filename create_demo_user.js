@@ -1,8 +1,42 @@
 const { MongoClient } = require('mongodb');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const DB_NAME = 'freelance-tracker-new';
+// Read .env.local file manually
+function loadEnvFile() {
+  try {
+    const envPath = path.join(__dirname, '.env.local');
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    const envVars = {};
+    
+    envContent.split('\n').forEach(line => {
+      const trimmedLine = line.trim();
+      if (trimmedLine && !trimmedLine.startsWith('#')) {
+        const [key, ...valueParts] = trimmedLine.split('=');
+        if (key && valueParts.length > 0) {
+          const value = valueParts.join('=').replace(/^["']|["']$/g, '');
+          envVars[key.trim()] = value;
+        }
+      }
+    });
+    
+    return envVars;
+  } catch (error) {
+    console.error('Error loading .env.local:', error.message);
+    return {};
+  }
+}
+
+// Load environment variables
+const envVars = loadEnvFile();
+const MONGODB_URI = envVars.MONGODB_URI;
+const DB_NAME = envVars.DB_NAME || 'freelance-tracker-new';
+
+if (!MONGODB_URI) {
+  console.error('❌ MONGODB_URI not found in .env.local');
+  process.exit(1);
+}
 
 async function createDemoUser() {
   const client = new MongoClient(MONGODB_URI);
