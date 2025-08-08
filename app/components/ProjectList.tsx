@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FiPlus, FiSearch, FiFilter, FiEdit, FiTrash2, FiCalendar, FiUser, FiDollarSign, FiCheck } from 'react-icons/fi';
+import { CheckCircle } from 'lucide-react';
 
 interface Project {
   _id: string;
@@ -29,6 +30,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState('name');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const fetchProjects = useCallback(async () => {
     try {
@@ -75,6 +77,12 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
       if (response.ok) {
         const updatedProject = await response.json();
         setProjects(projects.map(p => p._id === id ? { ...p, status: 'Completed' } : p));
+        
+        // Show success modal
+        setShowSuccessModal(true);
+        setTimeout(() => {
+          setShowSuccessModal(false);
+        }, 2000);
       }
     } catch (error) {
       console.error('Error completing project:', error);
@@ -294,6 +302,43 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
             </button>
           )}
         </div>
+      )}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60]"
+        >
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            className="bg-white rounded-2xl p-8 border border-gray-200 shadow-xl max-w-md w-full mx-4"
+          >
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center w-16 h-16 bg-green-500/20 rounded-full mb-4">
+                <CheckCircle className="w-8 h-8 text-green-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                Project Completed Successfully!
+              </h3>
+              <p className="text-gray-600 mb-6">
+                The project status has been updated to completed.
+              </p>
+              <div className="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
+                <motion.div
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 2 }}
+                  className="h-full bg-gradient-to-r from-green-400 to-emerald-500"
+                />
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
       )}
     </div>
   );
