@@ -30,29 +30,103 @@ import {
 } from 'recharts'
 
 const monthlyData = [
-  { month: 'Jan', earnings: 4200, projects: 5, hours: 120 },
-  { month: 'Feb', earnings: 3800, projects: 4, hours: 110 },
-  { month: 'Mar', earnings: 5200, projects: 7, hours: 145 },
-  { month: 'Apr', earnings: 4600, projects: 6, hours: 130 },
-  { month: 'May', earnings: 5800, projects: 8, hours: 160 },
-  { month: 'Jun', earnings: 6200, projects: 9, hours: 175 },
+  { month: 'January', earnings: 4200, projects: 5, hours: 120, completionRate: 85, growthRate: 8.5 },
+  { month: 'February', earnings: 3800, projects: 4, hours: 110, completionRate: 82, growthRate: -5.2 },
+  { month: 'March', earnings: 5200, projects: 7, hours: 145, completionRate: 91, growthRate: 15.8 },
+  { month: 'April', earnings: 4600, projects: 6, hours: 130, completionRate: 88, growthRate: -2.1 },
+  { month: 'May', earnings: 5800, projects: 8, hours: 160, completionRate: 93, growthRate: 12.3 },
+  { month: 'June', earnings: 6200, projects: 9, hours: 175, completionRate: 89, growthRate: 12.5 },
 ]
 
-const categoryData = [
-  { name: 'Web Development', value: 45, color: '#8b5cf6' },
-  { name: 'UI/UX Design', value: 25, color: '#06b6d4' },
-  { name: 'Branding', value: 15, color: '#f59e0b' },
-  { name: 'Mobile Apps', value: 10, color: '#ef4444' },
-  { name: 'Other', value: 5, color: '#10b981' },
-]
+const categoryDataByMonth = {
+  'January': [
+    { name: 'Web Development', value: 40, color: '#8b5cf6' },
+    { name: 'UI/UX Design', value: 30, color: '#06b6d4' },
+    { name: 'Branding', value: 15, color: '#f59e0b' },
+    { name: 'Mobile Apps', value: 10, color: '#ef4444' },
+    { name: 'Other', value: 5, color: '#10b981' },
+  ],
+  'February': [
+    { name: 'Web Development', value: 35, color: '#8b5cf6' },
+    { name: 'UI/UX Design', value: 25, color: '#06b6d4' },
+    { name: 'Branding', value: 20, color: '#f59e0b' },
+    { name: 'Mobile Apps', value: 15, color: '#ef4444' },
+    { name: 'Other', value: 5, color: '#10b981' },
+  ],
+  'March': [
+    { name: 'Web Development', value: 50, color: '#8b5cf6' },
+    { name: 'UI/UX Design', value: 20, color: '#06b6d4' },
+    { name: 'Branding', value: 15, color: '#f59e0b' },
+    { name: 'Mobile Apps', value: 10, color: '#ef4444' },
+    { name: 'Other', value: 5, color: '#10b981' },
+  ],
+  'April': [
+    { name: 'Web Development', value: 42, color: '#8b5cf6' },
+    { name: 'UI/UX Design', value: 28, color: '#06b6d4' },
+    { name: 'Branding', value: 18, color: '#f59e0b' },
+    { name: 'Mobile Apps', value: 8, color: '#ef4444' },
+    { name: 'Other', value: 4, color: '#10b981' },
+  ],
+  'May': [
+    { name: 'Web Development', value: 48, color: '#8b5cf6' },
+    { name: 'UI/UX Design', value: 22, color: '#06b6d4' },
+    { name: 'Branding', value: 15, color: '#f59e0b' },
+    { name: 'Mobile Apps', value: 12, color: '#ef4444' },
+    { name: 'Other', value: 3, color: '#10b981' },
+  ],
+  'June': [
+    { name: 'Web Development', value: 45, color: '#8b5cf6' },
+    { name: 'UI/UX Design', value: 25, color: '#06b6d4' },
+    { name: 'Branding', value: 15, color: '#f59e0b' },
+    { name: 'Mobile Apps', value: 10, color: '#ef4444' },
+    { name: 'Other', value: 5, color: '#10b981' },
+  ]
+}
 
-const clientData = [
-  { name: 'TechCorp Inc.', projects: 8, earnings: 12500, growth: 15 },
-  { name: 'StartupXYZ', projects: 5, earnings: 8200, growth: -5 },
-  { name: 'Creative Agency', projects: 6, earnings: 9800, growth: 22 },
-  { name: 'DataCorp', projects: 4, earnings: 6500, growth: 8 },
-  { name: 'Personal Clients', projects: 12, earnings: 15200, growth: 35 },
-]
+const clientDataByMonth = {
+  'January': [
+    { name: 'TechCorp Inc.', projects: 6, earnings: 10500, growth: 12 },
+    { name: 'StartupXYZ', projects: 4, earnings: 7200, growth: -8 },
+    { name: 'Creative Agency', projects: 5, earnings: 8800, growth: 18 },
+    { name: 'DataCorp', projects: 3, earnings: 5500, growth: 5 },
+    { name: 'Personal Clients', projects: 10, earnings: 12200, growth: 28 },
+  ],
+  'February': [
+    { name: 'TechCorp Inc.', projects: 5, earnings: 9500, growth: 8 },
+    { name: 'StartupXYZ', projects: 3, earnings: 6200, growth: -12 },
+    { name: 'Creative Agency', projects: 4, earnings: 7800, growth: 15 },
+    { name: 'DataCorp', projects: 3, earnings: 5200, growth: 2 },
+    { name: 'Personal Clients', projects: 9, earnings: 11500, growth: 25 },
+  ],
+  'March': [
+    { name: 'TechCorp Inc.', projects: 9, earnings: 13500, growth: 18 },
+    { name: 'StartupXYZ', projects: 6, earnings: 9200, growth: -2 },
+    { name: 'Creative Agency', projects: 7, earnings: 10800, growth: 25 },
+    { name: 'DataCorp', projects: 5, earnings: 7500, growth: 12 },
+    { name: 'Personal Clients', projects: 14, earnings: 16200, growth: 38 },
+  ],
+  'April': [
+    { name: 'TechCorp Inc.', projects: 7, earnings: 11500, growth: 10 },
+    { name: 'StartupXYZ', projects: 4, earnings: 7800, growth: -6 },
+    { name: 'Creative Agency', projects: 6, earnings: 9300, growth: 20 },
+    { name: 'DataCorp', projects: 4, earnings: 6200, growth: 6 },
+    { name: 'Personal Clients', projects: 11, earnings: 13800, growth: 30 },
+  ],
+  'May': [
+    { name: 'TechCorp Inc.', projects: 10, earnings: 14500, growth: 20 },
+    { name: 'StartupXYZ', projects: 6, earnings: 9800, growth: 2 },
+    { name: 'Creative Agency', projects: 8, earnings: 11800, growth: 28 },
+    { name: 'DataCorp', projects: 5, earnings: 7800, growth: 15 },
+    { name: 'Personal Clients', projects: 15, earnings: 18200, growth: 42 },
+  ],
+  'June': [
+    { name: 'TechCorp Inc.', projects: 8, earnings: 12500, growth: 15 },
+    { name: 'StartupXYZ', projects: 5, earnings: 8200, growth: -5 },
+    { name: 'Creative Agency', projects: 6, earnings: 9800, growth: 22 },
+    { name: 'DataCorp', projects: 4, earnings: 6500, growth: 8 },
+    { name: 'Personal Clients', projects: 12, earnings: 15200, growth: 35 },
+  ]
+}
 
 const COLORS = ['#8b5cf6', '#06b6d4', '#f59e0b', '#ef4444', '#10b981']
 
@@ -60,45 +134,84 @@ export default function MonthlyReport() {
   const [selectedMonth, setSelectedMonth] = useState('June')
   const [reportType, setReportType] = useState('overview')
 
-  const handleExport = () => {
-    const reportData = {
-      month: selectedMonth,
-      generatedAt: new Date().toISOString(),
-      summary: currentMonthData,
-      monthlyData: monthlyData,
-      categoryBreakdown: categoryData,
-      clientPerformance: clientData
+  // Get current month data based on selected month
+  const getCurrentMonthData = () => {
+    const monthData = monthlyData.find(data => data.month === selectedMonth)
+    if (monthData) {
+      return {
+        totalEarnings: monthData.earnings,
+        totalProjects: monthData.projects,
+        totalHours: monthData.hours,
+        avgProjectValue: Math.round(monthData.earnings / monthData.projects),
+        completionRate: monthData.completionRate,
+        growthRate: monthData.growthRate
+      }
     }
+    return {
+      totalEarnings: 6200,
+      totalProjects: 9,
+      totalHours: 175,
+      avgProjectValue: 689,
+      completionRate: 89,
+      growthRate: 12.5
+    }
+  }
 
-    // Convert to CSV format
-    const csvContent = [
+  const currentMonthData = getCurrentMonthData()
+
+  // Get category and client data based on selected month
+  const categoryData = categoryDataByMonth[selectedMonth] || categoryDataByMonth['June']
+  const clientData = clientDataByMonth[selectedMonth] || clientDataByMonth['June']
+
+  const handleExport = () => {
+    // Create Excel-compatible CSV with proper formatting
+    const csvLines = [
+      // Header
       'Monthly Freelance Report',
       `Month: ${selectedMonth}`,
       `Generated: ${new Date().toLocaleDateString()}`,
       '',
-      'Summary:',
-      `Total Earnings,$${currentMonthData.totalEarnings}`,
+      
+      // Summary Section
+      'SUMMARY',
+      'Metric,Value',
+      `Total Earnings,$${currentMonthData.totalEarnings.toLocaleString()}`,
       `Total Projects,${currentMonthData.totalProjects}`,
       `Total Hours,${currentMonthData.totalHours}`,
       `Average Project Value,$${currentMonthData.avgProjectValue}`,
       `Completion Rate,${currentMonthData.completionRate}%`,
       `Growth Rate,${currentMonthData.growthRate}%`,
       '',
-      'Monthly Performance:',
-      'Month,Earnings,Projects,Hours',
-      ...monthlyData.map(item => `${item.month},$${item.earnings},${item.projects},${item.hours}`),
+      
+      // Monthly Performance Section
+      'MONTHLY PERFORMANCE',
+      'Month,Earnings,Projects,Hours,Completion Rate',
+      ...monthlyData.map(item => 
+        `${item.month},$${item.earnings},${item.projects},${item.hours},${item.completionRate}%`
+      ),
       '',
-      'Category Breakdown:',
+      
+      // Category Breakdown Section
+      'CATEGORY BREAKDOWN',
       'Category,Percentage',
       ...categoryData.map(item => `${item.name},${item.value}%`),
       '',
-      'Client Performance:',
+      
+      // Client Performance Section
+      'CLIENT PERFORMANCE',
       'Client,Projects,Earnings,Growth',
-      ...clientData.map(item => `${item.name},${item.projects},$${item.earnings},${item.growth}%`)
-    ].join('\n')
+      ...clientData.map(item => 
+        `${item.name},${item.projects},$${item.earnings.toLocaleString()},${item.growth}%`
+      )
+    ]
 
-    // Create and download file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    // Convert to CSV format
+    const csvContent = csvLines.join('\n')
+
+    // Create and download Excel file
+    const blob = new Blob([csvContent], { 
+      type: 'application/vnd.ms-excel;charset=utf-8;' 
+    })
     const link = document.createElement('a')
     const url = URL.createObjectURL(blob)
     link.setAttribute('href', url)
@@ -109,14 +222,7 @@ export default function MonthlyReport() {
     document.body.removeChild(link)
   }
 
-  const currentMonthData = {
-    totalEarnings: 6200,
-    totalProjects: 9,
-    totalHours: 175,
-    avgProjectValue: 689,
-    completionRate: 89,
-    growthRate: 12.5
-  }
+
 
   return (
     <div className="space-y-6">
@@ -255,11 +361,16 @@ export default function MonthlyReport() {
                 <YAxis stroke="rgba(255,255,255,0.6)" />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: 'rgba(0,0,0,0.8)', 
-                    border: 'none', 
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)', 
+                    border: '1px solid rgba(255, 255, 255, 0.2)', 
                     borderRadius: '12px',
-                    color: 'white'
-                  }} 
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)'
+                  }}
+                  labelStyle={{ color: 'white' }}
+                  formatter={(value, name) => [`${value}%`, name]}
                 />
                 <Area 
                   type="monotone" 
@@ -305,11 +416,16 @@ export default function MonthlyReport() {
                 </Pie>
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: 'rgba(0,0,0,0.8)', 
-                    border: 'none', 
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)', 
+                    border: '1px solid rgba(255, 255, 255, 0.2)', 
                     borderRadius: '12px',
-                    color: 'white'
-                  }} 
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)'
+                  }}
+                  labelStyle={{ color: 'white' }}
+                  formatter={(value, name) => [`${value}%`, name]}
                 />
               </PieChart>
             </ResponsiveContainer>

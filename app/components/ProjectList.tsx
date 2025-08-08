@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FiPlus, FiSearch, FiFilter, FiEdit, FiTrash2, FiCalendar, FiUser, FiDollarSign } from 'react-icons/fi';
+import { FiPlus, FiSearch, FiFilter, FiEdit, FiTrash2, FiCalendar, FiUser, FiDollarSign, FiCheck } from 'react-icons/fi';
 
 interface Project {
   _id: string;
@@ -63,6 +63,24 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
     }
   };
 
+  const handleCompleteProject = async (id: string) => {
+    try {
+      const response = await fetch(`/api/projects/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'Completed' }),
+      });
+      if (response.ok) {
+        const updatedProject = await response.json();
+        setProjects(projects.map(p => p._id === id ? { ...p, status: 'Completed' } : p));
+      }
+    } catch (error) {
+      console.error('Error completing project:', error);
+    }
+  };
+
   const filteredAndSortedProjects = projects
     .filter(project => {
       const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -114,10 +132,10 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Projects</h2>
+        <h2 className="text-2xl font-bold text-white">Projects</h2>
         <button
           onClick={onAddProject}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 hover:shadow-lg text-white px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-300 font-medium"
         >
           <FiPlus /> Add New Project
         </button>
@@ -228,6 +246,14 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
 
               {/* Action Buttons */}
               <div className="flex gap-2">
+                {project.status !== 'Completed' && (
+                  <button
+                    onClick={() => handleCompleteProject(project._id)}
+                    className="flex-1 bg-green-50 hover:bg-green-100 text-green-600 px-3 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <FiCheck size={16} /> Complete
+                  </button>
+                )}
                 <button
                   onClick={() => onEditProject(project)}
                   className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
@@ -236,9 +262,10 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
                 </button>
                 <button
                   onClick={() => handleDeleteProject(project._id)}
-                  className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                  className="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-lg flex items-center justify-center transition-colors"
+                  title="Delete Project"
                 >
-                  <FiTrash2 size={16} /> Delete
+                  <FiTrash2 size={16} />
                 </button>
               </div>
             </div>
@@ -261,7 +288,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onAddProject, onEditProject }
           {!searchTerm && statusFilter === 'all' && (
             <button
               onClick={onAddProject}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg inline-flex items-center gap-2 transition-colors"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 hover:shadow-lg text-white px-6 py-3 rounded-xl inline-flex items-center gap-2 transition-all duration-300 font-medium"
             >
               <FiPlus /> Add Your First Project
             </button>

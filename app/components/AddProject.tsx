@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Save, 
@@ -24,15 +24,7 @@ interface ProjectForm {
   status: string
 }
 
-const categories = [
-  'Web Development',
-  'Mobile App',
-  'UI/UX Design',
-  'Branding',
-  'Marketing',
-  'Consulting',
-  'Other'
-]
+// Categories will be fetched from API
 
 const priorities = ['Low', 'Medium', 'High']
 const statuses = ['Pending', 'In Progress', 'Completed']
@@ -56,6 +48,34 @@ export default function AddProject({ onClose, onProjectAdded }: AddProjectProps 
 
   const [errors, setErrors] = useState<Partial<ProjectForm>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [categories, setCategories] = useState<string[]>([])
+
+  // Fetch categories on component mount
+  useEffect(() => {
+    fetchCategories()
+  }, [])
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/categories')
+      if (response.ok) {
+        const data = await response.json()
+        setCategories(data.categories)
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+      // Fallback to default categories
+      setCategories([
+        'Web Development',
+        'Mobile App',
+        'UI/UX Design',
+        'Branding',
+        'Marketing',
+        'Consulting',
+        'Other'
+      ])
+    }
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target

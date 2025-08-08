@@ -43,24 +43,44 @@ interface Stats {
   completedProjects: number
 }
 
-const chartData = [
-  { name: 'Jan', value: 4000 },
-  { name: 'Feb', value: 3000 },
-  { name: 'Mar', value: 5000 },
-  { name: 'Apr', value: 4500 },
-  { name: 'May', value: 6000 },
-  { name: 'Jun', value: 5500 },
-]
+const chartDataByPeriod = {
+  monthly: [
+    { name: 'Jan', value: 4000 },
+    { name: 'Feb', value: 3000 },
+    { name: 'Mar', value: 5000 },
+    { name: 'Apr', value: 4500 },
+    { name: 'May', value: 6000 },
+    { name: 'Jun', value: 5500 },
+  ],
+  weekly: [
+    { name: 'Week 1', value: 1200 },
+    { name: 'Week 2', value: 1800 },
+    { name: 'Week 3', value: 1400 },
+    { name: 'Week 4', value: 2100 },
+  ],
+  yearly: [
+    { name: '2021', value: 35000 },
+    { name: '2022', value: 42000 },
+    { name: '2023', value: 58000 },
+    { name: '2024', value: 65000 },
+  ]
+}
 
 const Dashboard: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
+  const [timeFilter, setTimeFilter] = useState('monthly')
   const [stats, setStats] = useState<Stats>({
     totalProjects: 0,
     totalIncome: 0,
     unpaidAmount: 0,
     completedProjects: 0
   })
+
+  // Get chart data based on selected time filter
+  const getChartData = () => {
+    return chartDataByPeriod[timeFilter as keyof typeof chartDataByPeriod] || chartDataByPeriod.monthly
+  }
 
   useEffect(() => {
     fetchProjects()
@@ -117,7 +137,11 @@ const Dashboard: React.FC = () => {
           <p className="text-white/80">Welcome back! Here's what's happening with your projects.</p>
         </div>
         <div className="flex items-center gap-4">
-          <select className="bg-white/10 border border-white/20 rounded-2xl px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm">
+          <select 
+            value={timeFilter}
+            onChange={(e) => setTimeFilter(e.target.value)}
+            className="bg-white/10 border border-white/20 rounded-2xl px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
+          >
             <option value="monthly">Monthly</option>
             <option value="weekly">Weekly</option>
             <option value="yearly">Yearly</option>
@@ -147,7 +171,7 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
+            <AreaChart data={getChartData()}>
               <defs>
                 <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#ffffff" stopOpacity={0.3}/>

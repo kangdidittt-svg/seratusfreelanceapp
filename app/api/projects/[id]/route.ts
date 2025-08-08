@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     }
 
     const mongoClient = await clientPromise;
-    const db = mongoClient.db('freelance-tracker');
+    const db = mongoClient.db('freelance-tracker-new');
     const project = await db.collection('projects').findOne({
       _id: new ObjectId(params.id),
       userId: new ObjectId(decoded.userId)
@@ -86,7 +86,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     updateData.updatedAt = new Date();
 
     const mongoClient = await clientPromise;
-    const db = mongoClient.db('freelance-tracker');
+    const db = mongoClient.db('freelance-tracker-new');
     const result = await db.collection('projects').updateOne(
       {
         _id: new ObjectId(params.id),
@@ -134,7 +134,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     }
 
     const mongoClient = await clientPromise;
-    const db = mongoClient.db('freelance-tracker');
+    const db = mongoClient.db('freelance-tracker-new');
     const result = await db.collection('projects').deleteOne({
       _id: new ObjectId(params.id),
       userId: new ObjectId(decoded.userId)

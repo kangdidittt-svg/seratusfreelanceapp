@@ -1,11 +1,25 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import jwt from 'jsonwebtoken';
 
+// Simple JWT verification for Edge Runtime
 function verifyTokenInMiddleware(token: string): any {
   try {
-    const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-    return jwt.verify(token, JWT_SECRET);
+    // For Edge Runtime, we'll do basic token structure validation
+    // and let the API routes handle full verification
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      return null;
+    }
+    
+    // Decode payload (basic validation)
+    const payload = JSON.parse(atob(parts[1]));
+    
+    // Check if token is expired
+    if (payload.exp && payload.exp < Date.now() / 1000) {
+      return null;
+    }
+    
+    return payload;
   } catch (error) {
     return null;
   }

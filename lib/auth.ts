@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import clientPromise from './mongodb';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production';
 
 export interface User {
   _id?: string;
@@ -35,7 +35,7 @@ export function verifyToken(token: string): any {
 
 export async function createUser(userData: Omit<User, '_id' | 'createdAt'>): Promise<User> {
   const client = await clientPromise;
-  const db = client.db('freelance-tracker');
+  const db = client.db('freelance-tracker-new');
   const users = db.collection<User>('users');
 
   // Check if user already exists
@@ -59,7 +59,7 @@ export async function createUser(userData: Omit<User, '_id' | 'createdAt'>): Pro
 
 export async function authenticateUser(username: string, password: string): Promise<User | null> {
   const client = await clientPromise;
-  const db = client.db('freelance-tracker');
+  const db = client.db('freelance-tracker-new');
   const users = db.collection<User>('users');
 
   const user = await users.findOne({ username });
@@ -84,10 +84,11 @@ export async function authenticateUser(username: string, password: string): Prom
 
 export async function getUserById(userId: string): Promise<User | null> {
   const client = await clientPromise;
-  const db = client.db('freelance-tracker');
+  const db = client.db('freelance-tracker-new');
   const users = db.collection<User>('users');
 
-  const user = await users.findOne({ _id: userId as any });
+  const { ObjectId } = require('mongodb');
+  const user = await users.findOne({ _id: new ObjectId(userId) });
   if (!user) {
     return null;
   }

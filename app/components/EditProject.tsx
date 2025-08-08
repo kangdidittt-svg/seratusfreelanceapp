@@ -24,15 +24,7 @@ interface ProjectForm {
   status: string
 }
 
-const categories = [
-  'Web Development',
-  'Mobile App',
-  'UI/UX Design',
-  'Branding',
-  'Marketing',
-  'Consulting',
-  'Other'
-]
+// Categories will be fetched from API
 
 const priorities = ['Low', 'Medium', 'High']
 const statuses = ['Pending', 'In Progress', 'Completed']
@@ -58,16 +50,41 @@ export default function EditProject({ projectId, onClose, onProjectUpdated }: Ed
   const [errors, setErrors] = useState<Partial<ProjectForm>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [categories, setCategories] = useState<string[]>([])
 
   useEffect(() => {
     fetchProject()
+    fetchCategories()
   }, [projectId])
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/categories')
+      if (response.ok) {
+        const data = await response.json()
+        setCategories(data.categories)
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+      // Fallback to default categories
+      setCategories([
+        'Web Development',
+        'Mobile App',
+        'UI/UX Design',
+        'Branding',
+        'Marketing',
+        'Consulting',
+        'Other'
+      ])
+    }
+  }
 
   const fetchProject = async () => {
     try {
       const response = await fetch(`/api/projects/${projectId}`)
       if (response.ok) {
-        const project = await response.json()
+        const data = await response.json()
+        const project = data.project
         setFormData({
           title: project.title || '',
           client: project.client || '',

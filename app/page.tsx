@@ -10,6 +10,7 @@ import AddProject from './components/AddProject';
 import MonthlyReport from './components/MonthlyReport';
 import Settings from './components/Settings';
 import Login from './components/Login';
+import EditProject from './components/EditProject';
 
 interface User {
   id: string;
@@ -96,6 +97,12 @@ export default function Home() {
     }
   };
 
+  const handleProjectUpdated = () => {
+    setRefreshTrigger(prev => prev + 1);
+    setEditingProject(null);
+    setActiveTab('projects');
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -106,7 +113,6 @@ export default function Home() {
           onAddProject={() => setActiveTab('add-project')}
           onEditProject={(project) => {
             setEditingProject(project);
-            setActiveTab('add-project');
           }}
         />;
       case 'add-project':
@@ -162,6 +168,15 @@ export default function Home() {
             </motion.div>
           </AnimatePresence>
         </main>
+        
+        {/* Edit Project Modal */}
+        {editingProject && (
+          <EditProject
+            projectId={editingProject._id}
+            onClose={() => setEditingProject(null)}
+            onProjectUpdated={handleProjectUpdated}
+          />
+        )}
       </div>
     </div>
   );
