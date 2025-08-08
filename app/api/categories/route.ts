@@ -30,6 +30,16 @@ export async function GET(request: NextRequest) {
     const mongoClient = await clientPromise
     const db = mongoClient.db('freelance-tracker-new')
     
+    // Handle demo user (doesn't have valid ObjectId)
+    if (decoded.userId === 'demo-user-123') {
+      return NextResponse.json({ categories: DEFAULT_CATEGORIES })
+    }
+    
+    // Validate ObjectId format
+    if (!ObjectId.isValid(decoded.userId)) {
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
+    }
+    
     // Get user's custom categories or return default ones
     const user = await db.collection('users').findOne({ _id: new ObjectId(decoded.userId) })
     const categories = user?.categories || DEFAULT_CATEGORIES
@@ -62,6 +72,26 @@ export async function POST(request: NextRequest) {
 
     const mongoClient = await clientPromise
     const db = mongoClient.db('freelance-tracker-new')
+    
+    // Handle demo user (doesn't have valid ObjectId)
+    if (decoded.userId === 'demo-user-123') {
+      // For demo user, just return default categories without saving
+      const currentCategories = DEFAULT_CATEGORIES
+      
+      // Check if category already exists
+      if (currentCategories.includes(category.trim())) {
+        return NextResponse.json({ error: 'Category already exists' }, { status: 400 })
+      }
+      
+      // Return updated categories for demo (not saved to DB)
+      const updatedCategories = [...currentCategories, category.trim()]
+      return NextResponse.json({ categories: updatedCategories })
+    }
+    
+    // Validate ObjectId format
+    if (!ObjectId.isValid(decoded.userId)) {
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
+    }
     
     // Get current categories
     const user = await db.collection('users').findOne({ _id: new ObjectId(decoded.userId) })
@@ -109,6 +139,33 @@ export async function PUT(request: NextRequest) {
 
     const mongoClient = await clientPromise
     const db = mongoClient.db('freelance-tracker-new')
+    
+    // Handle demo user (doesn't have valid ObjectId)
+    if (decoded.userId === 'demo-user-123') {
+      // For demo user, just return default categories without saving
+      const currentCategories = DEFAULT_CATEGORIES
+      
+      // Check if old category exists
+      const categoryIndex = currentCategories.indexOf(oldCategory)
+      if (categoryIndex === -1) {
+        return NextResponse.json({ error: 'Category not found' }, { status: 404 })
+      }
+      
+      // Check if new category already exists
+      if (currentCategories.includes(newCategory.trim()) && oldCategory !== newCategory.trim()) {
+        return NextResponse.json({ error: 'New category name already exists' }, { status: 400 })
+      }
+      
+      // Return updated categories for demo (not saved to DB)
+      const updatedCategories = [...currentCategories]
+      updatedCategories[categoryIndex] = newCategory.trim()
+      return NextResponse.json({ categories: updatedCategories })
+    }
+    
+    // Validate ObjectId format
+    if (!ObjectId.isValid(decoded.userId)) {
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
+    }
     
     // Get current categories
     const user = await db.collection('users').findOne({ _id: new ObjectId(decoded.userId) })
@@ -168,6 +225,26 @@ export async function DELETE(request: NextRequest) {
 
     const mongoClient = await clientPromise
     const db = mongoClient.db('freelance-tracker-new')
+    
+    // Handle demo user (doesn't have valid ObjectId)
+    if (decoded.userId === 'demo-user-123') {
+      // For demo user, just return default categories without saving
+      const currentCategories = DEFAULT_CATEGORIES
+      
+      // Check if category exists
+      if (!currentCategories.includes(category)) {
+        return NextResponse.json({ error: 'Category not found' }, { status: 404 })
+      }
+      
+      // Return updated categories for demo (not saved to DB)
+      const updatedCategories = currentCategories.filter((cat: string) => cat !== category)
+      return NextResponse.json({ categories: updatedCategories })
+    }
+    
+    // Validate ObjectId format
+    if (!ObjectId.isValid(decoded.userId)) {
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
+    }
     
     // Get current categories
     const user = await db.collection('users').findOne({ _id: new ObjectId(decoded.userId) })

@@ -22,6 +22,20 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       );
     }
 
+    // Handle demo user (doesn't have valid ObjectId)
+    if (decoded.userId === 'demo-user-123') {
+      // For demo user, return project not found since they don't have real projects
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      );
+    }
+    
+    // Validate ObjectId format
+    if (!ObjectId.isValid(decoded.userId) || !ObjectId.isValid(params.id)) {
+      return NextResponse.json({ error: 'Invalid ID format' }, { status: 400 });
+    }
+
     const mongoClient = await clientPromise;
     const db = mongoClient.db('freelance-tracker-new');
     const project = await db.collection('projects').findOne({
@@ -63,6 +77,20 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         { error: 'Invalid token' },
         { status: 401 }
       );
+    }
+
+    // Handle demo user (doesn't have valid ObjectId)
+    if (decoded.userId === 'demo-user-123') {
+      // For demo user, return project not found since they don't have real projects
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      );
+    }
+    
+    // Validate ObjectId format
+    if (!ObjectId.isValid(decoded.userId) || !ObjectId.isValid(params.id)) {
+      return NextResponse.json({ error: 'Invalid ID format' }, { status: 400 });
     }
 
     const body = await request.json();
@@ -131,6 +159,20 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         { error: 'Invalid token' },
         { status: 401 }
       );
+    }
+
+    // Handle demo user (doesn't have valid ObjectId)
+    if (decoded.userId === 'demo-user-123') {
+      // For demo user, return project not found since they don't have real projects
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      );
+    }
+    
+    // Validate ObjectId format
+    if (!ObjectId.isValid(decoded.userId) || !ObjectId.isValid(params.id)) {
+      return NextResponse.json({ error: 'Invalid ID format' }, { status: 400 });
     }
 
     const mongoClient = await clientPromise;

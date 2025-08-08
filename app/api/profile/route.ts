@@ -20,6 +20,26 @@ export async function GET(request: NextRequest) {
     const mongoClient = await clientPromise
     const db = mongoClient.db('freelance-tracker-new')
     
+    // Handle demo user (doesn't have valid ObjectId)
+    if (decoded.userId === 'demo-user-123') {
+      const profile = {
+        name: 'Demo User',
+        email: 'demo@example.com',
+        phone: '+1-555-0123',
+        location: 'Demo City, Demo State',
+        bio: 'This is a demo user profile for testing purposes.',
+        hourlyRate: '50',
+        currency: 'USD',
+        timezone: 'America/New_York'
+      }
+      return NextResponse.json({ profile })
+    }
+    
+    // Validate ObjectId format
+    if (!ObjectId.isValid(decoded.userId)) {
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
+    }
+    
     const user = await db.collection('users').findOne(
       { _id: new ObjectId(decoded.userId) },
       { projection: { password: 0 } } // Exclude password from response
@@ -88,6 +108,31 @@ export async function PUT(request: NextRequest) {
         { error: 'Invalid hourly rate' },
         { status: 400 }
       )
+    }
+
+    // Handle demo user (doesn't have valid ObjectId)
+    if (decoded.userId === 'demo-user-123') {
+      // For demo user, just return success without saving to DB
+      const updateData = {
+        name: profileData.name.trim(),
+        email: profileData.email.trim().toLowerCase(),
+        phone: profileData.phone?.trim() || '',
+        location: profileData.location?.trim() || '',
+        bio: profileData.bio?.trim() || '',
+        hourlyRate: profileData.hourlyRate,
+        currency: profileData.currency || 'USD',
+        timezone: profileData.timezone || 'America/New_York'
+      }
+      
+      return NextResponse.json({ 
+        message: 'Profile updated successfully (demo mode)',
+        profile: updateData
+      })
+    }
+    
+    // Validate ObjectId format
+    if (!ObjectId.isValid(decoded.userId)) {
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
     }
 
     const mongoClient = await clientPromise

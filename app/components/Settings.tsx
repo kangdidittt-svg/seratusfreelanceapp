@@ -115,9 +115,9 @@ export default function Settings() {
     
     try {
       const response = await fetch('/api/profile', {
-        method: 'POST',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profile })
+        body: JSON.stringify(profile)
       })
       
       if (response.ok) {

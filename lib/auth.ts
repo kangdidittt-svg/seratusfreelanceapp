@@ -119,11 +119,29 @@ export async function authenticateUser(username: string, password: string): Prom
 }
 
 export async function getUserById(userId: string): Promise<User | null> {
+  // Handle demo user
+  if (userId === 'demo-user-123') {
+    return {
+      _id: 'demo-user-123',
+      username: 'demo',
+      email: 'demo@example.com',
+      role: 'user',
+      password: '',
+      createdAt: new Date()
+    };
+  }
+
+  const { ObjectId } = require('mongodb');
+  
+  // Validate ObjectId format
+  if (!ObjectId.isValid(userId)) {
+    return null;
+  }
+
   const client = await clientPromise;
   const db = client.db('freelance-tracker-new');
   const users = db.collection<User>('users');
 
-  const { ObjectId } = require('mongodb');
   const user = await users.findOne({ _id: new ObjectId(userId) });
   if (!user) {
     return null;

@@ -22,6 +22,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Handle demo user (doesn't have valid ObjectId)
+    if (decoded.userId === 'demo-user-123') {
+      // Return empty projects array for demo user
+      return NextResponse.json({ projects: [] });
+    }
+    
+    // Validate ObjectId format
+    if (!ObjectId.isValid(decoded.userId)) {
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
+    }
+
     const mongoClient = await clientPromise;
     const db = mongoClient.db('freelance-tracker-new');
     const projects = await db.collection('projects')
@@ -67,6 +78,20 @@ export async function POST(request: NextRequest) {
         { error: 'Missing required fields' },
         { status: 400 }
       );
+    }
+
+    // Handle demo user (doesn't have valid ObjectId)
+    if (decoded.userId === 'demo-user-123') {
+      // For demo user, just return success without saving to DB
+      return NextResponse.json({
+        message: 'Project created successfully (demo mode)',
+        projectId: 'demo-project-' + Date.now()
+      }, { status: 201 });
+    }
+    
+    // Validate ObjectId format
+    if (!ObjectId.isValid(decoded.userId)) {
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
     }
 
     const mongoClient = await clientPromise;
