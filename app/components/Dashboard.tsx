@@ -53,28 +53,30 @@ interface Stats {
   totalIncome: number
   unpaidAmount: number
   completedProjects: number
+  inProgressProjects: number
+  pendingProjects: number
 }
 
 const chartDataByPeriod = {
   monthly: [
-    { name: 'Jan', value: 4000 },
-    { name: 'Feb', value: 3000 },
-    { name: 'Mar', value: 5000 },
-    { name: 'Apr', value: 4500 },
-    { name: 'May', value: 6000 },
-    { name: 'Jun', value: 5500 },
+    { name: 'Jan', value: 0 },
+    { name: 'Feb', value: 0 },
+    { name: 'Mar', value: 0 },
+    { name: 'Apr', value: 0 },
+    { name: 'May', value: 0 },
+    { name: 'Jun', value: 0 },
   ],
   weekly: [
-    { name: 'Week 1', value: 1200 },
-    { name: 'Week 2', value: 1800 },
-    { name: 'Week 3', value: 1400 },
-    { name: 'Week 4', value: 2100 },
+    { name: 'Week 1', value: 0 },
+    { name: 'Week 2', value: 0 },
+    { name: 'Week 3', value: 0 },
+    { name: 'Week 4', value: 0 },
   ],
   yearly: [
-    { name: '2021', value: 35000 },
-    { name: '2022', value: 42000 },
-    { name: '2023', value: 58000 },
-    { name: '2024', value: 65000 },
+    { name: '2021', value: 0 },
+    { name: '2022', value: 0 },
+    { name: '2023', value: 0 },
+    { name: '2024', value: 0 },
   ]
 }
 
@@ -505,8 +507,38 @@ const Dashboard = () => {
     totalProjects: 0,
     totalIncome: 0,
     unpaidAmount: 0,
-    completedProjects: 0
+    completedProjects: 0,
+    inProgressProjects: 0,
+    pendingProjects: 0
   })
+
+  // Calculate dynamic percentages based on actual data
+  const calculatePercentages = () => {
+    const totalProjects = stats.totalProjects
+    if (totalProjects === 0) {
+      return {
+        earningsGrowth: '0%',
+        completedGrowth: '0%',
+        avgProjectGrowth: '0%',
+        pendingChange: '0%',
+        activeGrowth: '0%'
+      }
+    }
+
+    const completionRate = Math.round((stats.completedProjects / totalProjects) * 100)
+    const inProgressRate = Math.round((stats.inProgressProjects / totalProjects) * 100)
+    const pendingRate = Math.round((stats.pendingProjects / totalProjects) * 100)
+    
+    return {
+      earningsGrowth: stats.totalIncome > 0 ? `+${completionRate}%` : '0%',
+      completedGrowth: `+${completionRate}%`,
+      avgProjectGrowth: stats.totalIncome > 0 ? `+${Math.round(stats.totalIncome / 1000)}%` : '0%',
+      pendingChange: pendingRate > 50 ? `-${pendingRate}%` : `+${pendingRate}%`,
+      activeGrowth: `+${inProgressRate}%`
+    }
+  }
+
+  const percentages = calculatePercentages()
 
   // Get chart data based on selected time filter
   const getChartData = () => {
@@ -574,10 +606,15 @@ const Dashboard = () => {
   }, [fetchProjects])
 
   const calculateStats = (projectsData: Project[]) => {
-
     const totalProjects = projectsData.length
-    const totalIncome = projectsData.reduce((sum, project) => sum + project.budget, 0)
-    const completedProjects = projectsData.filter(p => p.status === 'Completed').length
+    const completedProjects = projectsData.filter(p => p.status === 'Completed')
+    const inProgressProjects = projectsData.filter(p => p.status === 'In Progress')
+    const pendingProjects = projectsData.filter(p => p.status === 'Pending')
+    
+    // Total Income hanya dari project yang sudah completed
+    const totalIncome = completedProjects.reduce((sum, project) => sum + project.budget, 0)
+    
+    // Unpaid Amount dari project yang belum completed (termasuk yang sedang progress)
     const unpaidAmount = projectsData
       .filter(p => p.status !== 'Completed')
       .reduce((sum, project) => sum + project.budget, 0)
@@ -586,7 +623,9 @@ const Dashboard = () => {
       totalProjects,
       totalIncome,
       unpaidAmount,
-      completedProjects
+      completedProjects: completedProjects.length,
+      inProgressProjects: inProgressProjects.length,
+      pendingProjects: pendingProjects.length
     })
   }
 
@@ -635,7 +674,7 @@ const Dashboard = () => {
             <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
               <DollarSign className="w-6 h-6 text-white drop-shadow-sm" />
             </div>
-            <span className="text-emerald-600 text-sm font-medium">+12%</span>
+            <span className="text-emerald-600 text-sm font-medium">{percentages.earningsGrowth}</span>
           </div>
           <h3 className="text-slate-600 text-sm font-medium mb-1">Total Earnings</h3>
           <p className="text-2xl font-bold text-slate-800">${stats.totalIncome.toLocaleString()}</p>
@@ -652,7 +691,7 @@ const Dashboard = () => {
             <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
               <Target className="w-6 h-6 text-white drop-shadow-sm" />
             </div>
-            <span className="text-emerald-600 text-sm font-medium">+8%</span>
+            <span className="text-emerald-600 text-sm font-medium">{percentages.completedGrowth}</span>
           </div>
           <h3 className="text-slate-600 text-sm font-medium mb-1">Projects Completed</h3>
           <p className="text-2xl font-bold text-slate-800">{stats.completedProjects}</p>
@@ -669,7 +708,7 @@ const Dashboard = () => {
             <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
               <TrendingUp className="w-6 h-6 text-white drop-shadow-sm" />
             </div>
-            <span className="text-emerald-600 text-sm font-medium">+5%</span>
+            <span className="text-emerald-600 text-sm font-medium">{percentages.avgProjectGrowth}</span>
           </div>
           <h3 className="text-slate-600 text-sm font-medium mb-1">Avg Project Value</h3>
           <p className="text-2xl font-bold text-slate-800">${stats.totalProjects > 0 ? Math.round(stats.totalIncome / stats.totalProjects).toLocaleString() : '0'}</p>
@@ -686,7 +725,7 @@ const Dashboard = () => {
             <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
               <Clock className="w-6 h-6 text-white drop-shadow-sm" />
             </div>
-            <span className="text-orange-600 text-sm font-medium">-3%</span>
+            <span className={`text-sm font-medium ${stats.pendingProjects > stats.completedProjects ? 'text-orange-600' : 'text-emerald-600'}`}>{percentages.pendingChange}</span>
           </div>
           <h3 className="text-slate-600 text-sm font-medium mb-1">Pending Payment</h3>
           <p className="text-2xl font-bold text-slate-800">${stats.unpaidAmount.toLocaleString()}</p>
@@ -703,7 +742,7 @@ const Dashboard = () => {
             <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
               <Activity className="w-6 h-6 text-white drop-shadow-sm" />
             </div>
-            <span className="text-emerald-600 text-sm font-medium">+15%</span>
+            <span className="text-emerald-600 text-sm font-medium">{percentages.activeGrowth}</span>
           </div>
           <h3 className="text-slate-600 text-sm font-medium mb-1">Active Projects</h3>
           <p className="text-2xl font-bold text-slate-800">{getSortedProjects().filter(p => p.status === 'In Progress').length}</p>

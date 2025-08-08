@@ -30,102 +30,30 @@ import {
 } from 'recharts'
 
 const monthlyData = [
-  { month: 'January', earnings: 4200, projects: 5, hours: 120, completionRate: 85, growthRate: 8.5 },
-  { month: 'February', earnings: 3800, projects: 4, hours: 110, completionRate: 82, growthRate: -5.2 },
-  { month: 'March', earnings: 5200, projects: 7, hours: 145, completionRate: 91, growthRate: 15.8 },
-  { month: 'April', earnings: 4600, projects: 6, hours: 130, completionRate: 88, growthRate: -2.1 },
-  { month: 'May', earnings: 5800, projects: 8, hours: 160, completionRate: 93, growthRate: 12.3 },
-  { month: 'June', earnings: 6200, projects: 9, hours: 175, completionRate: 89, growthRate: 12.5 },
+  { month: 'January', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
+  { month: 'February', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
+  { month: 'March', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
+  { month: 'April', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
+  { month: 'May', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
+  { month: 'June', earnings: 0, projects: 0, hours: 0, completionRate: 0, growthRate: 0 },
 ]
 
 const categoryDataByMonth = {
-  'January': [
-    { name: 'Web Development', value: 40, color: '#8b5cf6' },
-    { name: 'UI/UX Design', value: 30, color: '#06b6d4' },
-    { name: 'Branding', value: 15, color: '#f59e0b' },
-    { name: 'Mobile Apps', value: 10, color: '#ef4444' },
-    { name: 'Other', value: 5, color: '#10b981' },
-  ],
-  'February': [
-    { name: 'Web Development', value: 35, color: '#8b5cf6' },
-    { name: 'UI/UX Design', value: 25, color: '#06b6d4' },
-    { name: 'Branding', value: 20, color: '#f59e0b' },
-    { name: 'Mobile Apps', value: 15, color: '#ef4444' },
-    { name: 'Other', value: 5, color: '#10b981' },
-  ],
-  'March': [
-    { name: 'Web Development', value: 50, color: '#8b5cf6' },
-    { name: 'UI/UX Design', value: 20, color: '#06b6d4' },
-    { name: 'Branding', value: 15, color: '#f59e0b' },
-    { name: 'Mobile Apps', value: 10, color: '#ef4444' },
-    { name: 'Other', value: 5, color: '#10b981' },
-  ],
-  'April': [
-    { name: 'Web Development', value: 42, color: '#8b5cf6' },
-    { name: 'UI/UX Design', value: 28, color: '#06b6d4' },
-    { name: 'Branding', value: 18, color: '#f59e0b' },
-    { name: 'Mobile Apps', value: 8, color: '#ef4444' },
-    { name: 'Other', value: 4, color: '#10b981' },
-  ],
-  'May': [
-    { name: 'Web Development', value: 48, color: '#8b5cf6' },
-    { name: 'UI/UX Design', value: 22, color: '#06b6d4' },
-    { name: 'Branding', value: 15, color: '#f59e0b' },
-    { name: 'Mobile Apps', value: 12, color: '#ef4444' },
-    { name: 'Other', value: 3, color: '#10b981' },
-  ],
-  'June': [
-    { name: 'Web Development', value: 45, color: '#8b5cf6' },
-    { name: 'UI/UX Design', value: 25, color: '#06b6d4' },
-    { name: 'Branding', value: 15, color: '#f59e0b' },
-    { name: 'Mobile Apps', value: 10, color: '#ef4444' },
-    { name: 'Other', value: 5, color: '#10b981' },
-  ]
+  'January': [],
+  'February': [],
+  'March': [],
+  'April': [],
+  'May': [],
+  'June': []
 }
 
 const clientDataByMonth = {
-  'January': [
-    { name: 'TechCorp Inc.', projects: 6, earnings: 10500, growth: 12 },
-    { name: 'StartupXYZ', projects: 4, earnings: 7200, growth: -8 },
-    { name: 'Creative Agency', projects: 5, earnings: 8800, growth: 18 },
-    { name: 'DataCorp', projects: 3, earnings: 5500, growth: 5 },
-    { name: 'Personal Clients', projects: 10, earnings: 12200, growth: 28 },
-  ],
-  'February': [
-    { name: 'TechCorp Inc.', projects: 5, earnings: 9500, growth: 8 },
-    { name: 'StartupXYZ', projects: 3, earnings: 6200, growth: -12 },
-    { name: 'Creative Agency', projects: 4, earnings: 7800, growth: 15 },
-    { name: 'DataCorp', projects: 3, earnings: 5200, growth: 2 },
-    { name: 'Personal Clients', projects: 9, earnings: 11500, growth: 25 },
-  ],
-  'March': [
-    { name: 'TechCorp Inc.', projects: 9, earnings: 13500, growth: 18 },
-    { name: 'StartupXYZ', projects: 6, earnings: 9200, growth: -2 },
-    { name: 'Creative Agency', projects: 7, earnings: 10800, growth: 25 },
-    { name: 'DataCorp', projects: 5, earnings: 7500, growth: 12 },
-    { name: 'Personal Clients', projects: 14, earnings: 16200, growth: 38 },
-  ],
-  'April': [
-    { name: 'TechCorp Inc.', projects: 7, earnings: 11500, growth: 10 },
-    { name: 'StartupXYZ', projects: 4, earnings: 7800, growth: -6 },
-    { name: 'Creative Agency', projects: 6, earnings: 9300, growth: 20 },
-    { name: 'DataCorp', projects: 4, earnings: 6200, growth: 6 },
-    { name: 'Personal Clients', projects: 11, earnings: 13800, growth: 30 },
-  ],
-  'May': [
-    { name: 'TechCorp Inc.', projects: 10, earnings: 14500, growth: 20 },
-    { name: 'StartupXYZ', projects: 6, earnings: 9800, growth: 2 },
-    { name: 'Creative Agency', projects: 8, earnings: 11800, growth: 28 },
-    { name: 'DataCorp', projects: 5, earnings: 7800, growth: 15 },
-    { name: 'Personal Clients', projects: 15, earnings: 18200, growth: 42 },
-  ],
-  'June': [
-    { name: 'TechCorp Inc.', projects: 8, earnings: 12500, growth: 15 },
-    { name: 'StartupXYZ', projects: 5, earnings: 8200, growth: -5 },
-    { name: 'Creative Agency', projects: 6, earnings: 9800, growth: 22 },
-    { name: 'DataCorp', projects: 4, earnings: 6500, growth: 8 },
-    { name: 'Personal Clients', projects: 12, earnings: 15200, growth: 35 },
-  ]
+  'January': [],
+  'February': [],
+  'March': [],
+  'April': [],
+  'May': [],
+  'June': []
 }
 
 const COLORS = ['#8b5cf6', '#06b6d4', '#f59e0b', '#ef4444', '#10b981']

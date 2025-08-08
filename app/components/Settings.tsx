@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { 
   User, 
-  Bell, 
   Mail,
   Phone,
   MapPin,
@@ -30,13 +29,7 @@ interface UserProfile {
   timezone: string
 }
 
-interface NotificationSettings {
-  emailNotifications: boolean
-  pushNotifications: boolean
-  projectUpdates: boolean
-  paymentReminders: boolean
-  clientMessages: boolean
-}
+
 
 interface PasswordData {
   currentPassword: string
@@ -62,13 +55,7 @@ export default function Settings() {
     timezone: 'America/New_York'
   })
 
-  const [notifications, setNotifications] = useState<NotificationSettings>({
-    emailNotifications: true,
-    pushNotifications: true,
-    projectUpdates: true,
-    paymentReminders: true,
-    clientMessages: true
-  })
+
 
   const [passwordData, setPasswordData] = useState<PasswordData>({
     currentPassword: '',
@@ -108,7 +95,7 @@ export default function Settings() {
       if (response.ok) {
         const data = await response.json()
         setProfile(data.profile)
-        setNotifications(data.notifications)
+  
       }
     } catch (error) {
       console.error('Error loading profile:', error)
@@ -119,9 +106,7 @@ export default function Settings() {
     setProfile(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleNotificationChange = (field: keyof NotificationSettings) => {
-    setNotifications(prev => ({ ...prev, [field]: !prev[field] }))
-  }
+
 
   const handleSave = async () => {
     setIsSaving(true)
@@ -132,7 +117,7 @@ export default function Settings() {
       const response = await fetch('/api/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profile, notifications })
+        body: JSON.stringify({ profile })
       })
       
       if (response.ok) {
@@ -343,7 +328,6 @@ export default function Settings() {
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'categories', label: 'Categories', icon: Tag },
     { id: 'security', label: 'Security', icon: Lock }
   ]
@@ -612,40 +596,7 @@ export default function Settings() {
             </div>
           )}
 
-          {/* Notifications Tab */}
-          {activeTab === 'notifications' && (
-            <div className="bg-gradient-to-br from-white/90 to-emerald-50/30 backdrop-blur-sm border border-emerald-200/30 rounded-2xl p-8 shadow-lg">
-              <h3 className="text-xl font-semibold text-gray-800 mb-6">Notification Preferences</h3>
-              <div className="space-y-6">
-                {Object.entries(notifications).map(([key, value]) => (
-                  <div key={key} className="flex items-center justify-between p-4 bg-gradient-to-r from-white/80 to-emerald-50/30 backdrop-blur-sm rounded-xl border border-emerald-200/30">
-                    <div>
-                      <h4 className="font-medium text-gray-800 capitalize">
-                        {key.replace(/([A-Z])/g, ' $1').trim()}
-                      </h4>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {key === 'emailNotifications' && 'Receive notifications via email'}
-                        {key === 'pushNotifications' && 'Receive push notifications on your device'}
-                        {key === 'projectUpdates' && 'Get notified about project status changes'}
-                        {key === 'paymentReminders' && 'Receive reminders for pending payments'}
-                        {key === 'clientMessages' && 'Get notified when clients send messages'}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleNotificationChange(key as keyof NotificationSettings)}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
-                        value ? 'bg-emerald-500' : 'bg-gray-300'
-                      }`}
-                    >
-                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
-                        value ? 'translate-x-6' : 'translate-x-1'
-                      }`} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+
 
           {/* Categories Tab */}
           {activeTab === 'categories' && (
