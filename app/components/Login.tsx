@@ -160,20 +160,6 @@ export default function Login({ onLogin }: LoginProps) {
               )}
             </motion.button>
           </form>
-
-          {/* Default Credentials Info */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-            className="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/50 rounded-lg shadow-sm backdrop-blur-sm"
-          >
-            <p className="text-gray-700 text-sm text-center">
-              <strong>Default Login:</strong><br />
-              Username: admin<br />
-              Password: admin123
-            </p>
-          </motion.div>
         </div>
       </motion.div>
     </div>

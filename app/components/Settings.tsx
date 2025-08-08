@@ -13,7 +13,10 @@ import {
   Save,
   Globe,
   DollarSign,
-  Tag
+  Tag,
+  Lock,
+  Eye,
+  EyeOff
 } from 'lucide-react'
 
 interface UserProfile {
@@ -35,7 +38,11 @@ interface NotificationSettings {
   clientMessages: boolean
 }
 
-
+interface PasswordData {
+  currentPassword: string
+  newPassword: string
+  confirmPassword: string
+}
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('profile')
@@ -63,6 +70,19 @@ export default function Settings() {
     clientMessages: true
   })
 
+  const [passwordData, setPasswordData] = useState<PasswordData>({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  })
+
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [passwordChangeMessage, setPasswordChangeMessage] = useState('')
+  const [passwordChangeError, setPasswordChangeError] = useState('')
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
+
   const [categories, setCategories] = useState<string[]>([])
   const [newCategory, setNewCategory] = useState('')
   const [editingCategory, setEditingCategory] = useState<{index: number, value: string} | null>(null)
@@ -88,8 +108,7 @@ export default function Settings() {
       if (response.ok) {
         const data = await response.json()
         setProfile(data.profile)
-      } else {
-        console.error('Failed to load profile')
+        setNotifications(data.notifications)
       }
     } catch (error) {
       console.error('Error loading profile:', error)
@@ -104,79 +123,55 @@ export default function Settings() {
     setNotifications(prev => ({ ...prev, [field]: !prev[field] }))
   }
 
-  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const result = e.target?.result as string
-        setProfilePhoto(result)
-        // Save to localStorage for persistence
-        localStorage.setItem('profilePhoto', result)
-        // Dispatch custom event to update TopBar
-        window.dispatchEvent(new CustomEvent('profilePhotoChanged', { detail: result }))
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
-  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const result = e.target?.result as string
-        setLogoUrl(result)
-        // Save to localStorage for persistence
-        localStorage.setItem('logoUrl', result)
-        // Dispatch custom event to update TopBar
-        window.dispatchEvent(new CustomEvent('logoChanged', { detail: result }))
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
   const handleSave = async () => {
     setIsSaving(true)
     setSaveMessage('')
     setSaveError('')
     
     try {
-      // Save profile data to API
       const response = await fetch('/api/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profile)
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profile, notifications })
       })
       
-      const data = await response.json()
-      
       if (response.ok) {
-        // Also save logo and photo to localStorage (they're already saved on upload)
-        // This ensures they persist even after save
-        if (logoUrl) {
-          localStorage.setItem('logoUrl', logoUrl)
-        }
-        if (profilePhoto) {
-          localStorage.setItem('profilePhoto', profilePhoto)
-        }
-        
-        setSaveMessage('Profile, logo, and photo updated successfully!')
-        // Clear success message after 3 seconds
+        setSaveMessage('Settings saved successfully!')
         setTimeout(() => setSaveMessage(''), 3000)
       } else {
-        setSaveError(data.error || 'Failed to save profile')
-        // Clear error message after 5 seconds
-        setTimeout(() => setSaveError(''), 5000)
+        setSaveError('Failed to save settings')
       }
     } catch (error) {
-      console.error('Error saving profile:', error)
-      setSaveError('Network error. Please try again.')
-      setTimeout(() => setSaveError(''), 5000)
+      console.error('Error saving settings:', error)
+      setSaveError('An error occurred while saving')
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const result = event.target?.result as string
+        setProfilePhoto(result)
+        localStorage.setItem('profilePhoto', result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const result = event.target?.result as string
+        setLogoUrl(result)
+        localStorage.setItem('logoUrl', result)
+      }
+      reader.readAsDataURL(file)
     }
   }
 
@@ -241,11 +236,11 @@ export default function Settings() {
         setEditingCategory(null)
       } else {
         const error = await response.json()
-        alert(error.error || 'Failed to update category')
+        alert(error.error || 'Failed to edit category')
       }
     } catch (error) {
-      console.error('Error updating category:', error)
-      alert('Failed to update category')
+      console.error('Error editing category:', error)
+      alert('Failed to edit category')
     } finally {
       setIsLoading(false)
     }
@@ -287,10 +282,70 @@ export default function Settings() {
     setCategoryToDelete('')
   }
 
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Reset messages
+    setPasswordChangeMessage('')
+    setPasswordChangeError('')
+    
+    // Validation
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      setPasswordChangeError('All password fields are required')
+      return
+    }
+    
+    if (passwordData.newPassword.length < 6) {
+      setPasswordChangeError('New password must be at least 6 characters long')
+      return
+    }
+    
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordChangeError('New passwords do not match')
+      return
+    }
+    
+    setIsChangingPassword(true)
+    
+    try {
+      const response = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword
+        })
+      })
+      
+      const data = await response.json()
+      
+      if (response.ok) {
+        setPasswordChangeMessage('Password changed successfully!')
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        })
+        // Clear success message after 3 seconds
+        setTimeout(() => setPasswordChangeMessage(''), 3000)
+      } else {
+        setPasswordChangeError(data.error || 'Failed to change password')
+      }
+    } catch (error) {
+      console.error('Error changing password:', error)
+      setPasswordChangeError('An error occurred while changing password')
+    } finally {
+      setIsChangingPassword(false)
+    }
+  }
+
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'categories', label: 'Categories', icon: Tag }
+    { id: 'categories', label: 'Categories', icon: Tag },
+    { id: 'security', label: 'Security', icon: Lock }
   ]
 
   return (
@@ -330,19 +385,19 @@ export default function Settings() {
             </>
           )}
         </motion.button>
-        
-        {/* Success/Error Messages */}
-        {saveMessage && (
-          <div className="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-            {saveMessage}
-          </div>
-        )}
-        {saveError && (
-          <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-            {saveError}
-          </div>
-        )}
       </motion.div>
+
+      {/* Success/Error Messages */}
+      {saveMessage && (
+        <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 font-medium">
+          {saveMessage}
+        </div>
+      )}
+      {saveError && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 font-medium">
+          {saveError}
+        </div>
+      )}
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar Tabs */}
@@ -350,31 +405,27 @@ export default function Settings() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="lg:w-64 bg-gradient-to-br from-white/90 to-emerald-50/20 backdrop-blur-sm rounded-2xl p-6 border border-emerald-200/50 shadow-xl h-fit"
+          className="lg:w-64 space-y-2"
         >
-          <nav className="space-y-2">
-            {tabs.map((tab) => {
-              const Icon = tab.icon
-              const isActive = activeTab === tab.id
-              
-              return (
-                <motion.button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                    isActive 
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg' 
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50'
-                  }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Icon size={20} />
-                  <span className="font-medium">{tab.label}</span>
-                </motion.button>
-              )
-            })}
-          </nav>
+          {tabs.map((tab) => {
+            const Icon = tab.icon
+            return (
+              <motion.button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-300 ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
+                    : 'bg-white/80 backdrop-blur-sm border border-emerald-200/30 text-gray-700 hover:bg-emerald-50'
+                }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Icon size={20} />
+                <span className="font-medium">{tab.label}</span>
+              </motion.button>
+            )
+          })}
         </motion.div>
 
         {/* Content Area */}
@@ -384,72 +435,71 @@ export default function Settings() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className="flex-1 bg-gradient-to-br from-white/90 to-emerald-50/20 backdrop-blur-sm rounded-2xl p-8 border border-emerald-200/50 shadow-xl"
+          className="flex-1"
         >
           {/* Profile Tab */}
           {activeTab === 'profile' && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Profile Information</h2>
-              
+            <div className="space-y-8">
               {/* Profile Picture */}
-              <div className="flex items-center space-x-6">
-                <div className="relative">
-                  <Image
-                    src={profilePhoto}
-                    alt="Profile"
-                    width={96}
-                    height={96}
-                    className="w-24 h-24 rounded-2xl object-cover"
-                  />
-                  <button 
-                    onClick={() => document.getElementById('photoUpload')?.click()}
-                    className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white hover:shadow-lg transition-all duration-300 hover:from-emerald-600 hover:to-teal-700"
-                  >
-                    <Camera size={16} />
-                  </button>
-                  <input
-                    id="photoUpload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePhotoUpload}
-                    className="hidden"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-gray-800 font-semibold text-lg">{profile.name}</h3>
-                  <p className="text-gray-600">Freelance Developer</p>
-                  <button 
-                    onClick={() => document.getElementById('photoUpload')?.click()}
-                    className="text-emerald-500 hover:text-emerald-600 text-sm mt-1 transition-colors duration-300"
-                  >
-                    Change Photo
-                  </button>
+              <div className="bg-gradient-to-br from-white/90 to-emerald-50/30 backdrop-blur-sm border border-emerald-200/30 rounded-2xl p-8 shadow-lg">
+                <div className="flex flex-col sm:flex-row items-center gap-6">
+                  <div className="relative group">
+                    <Image
+                      src={profilePhoto}
+                      alt="Profile"
+                      width={96}
+                      height={96}
+                      className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
+                    />
+                    <button
+                      onClick={() => document.getElementById('photoUpload')?.click()}
+                      className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    >
+                      <Camera className="w-6 h-6 text-white" />
+                    </button>
+                    <input
+                      id="photoUpload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Profile Picture</h3>
+                    <p className="text-gray-600 mb-4">Upload a professional photo for your profile</p>
+                    <button
+                      onClick={() => document.getElementById('photoUpload')?.click()}
+                      className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 shadow-md"
+                    >
+                      Change Photo
+                    </button>
+                  </div>
                 </div>
               </div>
 
               {/* Logo Upload */}
-              <div className="space-y-4">
-                <h3 className="text-gray-800 font-semibold text-lg">Studio Logo</h3>
-                <div className="flex items-center space-x-6">
-                  <div className="relative">
+              <div className="bg-gradient-to-br from-white/90 to-emerald-50/30 backdrop-blur-sm border border-emerald-200/30 rounded-2xl p-8 shadow-lg">
+                <div className="flex flex-col sm:flex-row items-center gap-6">
+                  <div className="relative group">
                     {logoUrl ? (
                       <Image
                         src={logoUrl}
-                        alt="Studio Logo"
+                        alt="Logo"
                         width={96}
                         height={96}
-                        className="w-24 h-24 rounded-2xl object-cover border-2 border-white/20"
+                        className="w-24 h-24 rounded-lg object-cover border-4 border-white shadow-lg"
                       />
                     ) : (
-                      <div className="w-24 h-24 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-300 flex items-center justify-center">
-                        <span className="text-gray-400 text-xs text-center">No Logo</span>
+                      <div className="w-24 h-24 bg-gray-200 rounded-lg border-4 border-white shadow-lg flex items-center justify-center">
+                        <Camera className="w-8 h-8 text-gray-400" />
                       </div>
                     )}
-                    <button 
+                    <button
                       onClick={() => document.getElementById('logoUpload')?.click()}
-                      className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white hover:shadow-lg transition-all duration-300 hover:from-emerald-600 hover:to-teal-700"
+                      className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     >
-                      <Camera size={16} />
+                      <Camera className="w-6 h-6 text-white" />
                     </button>
                     <input
                       id="logoUpload"
@@ -460,11 +510,11 @@ export default function Settings() {
                     />
                   </div>
                   <div>
-                    <h4 className="text-gray-800 font-medium">Upload Studio Logo</h4>
-                    <p className="text-gray-600 text-sm">This will appear in the top bar</p>
-                    <button 
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Business Logo</h3>
+                    <p className="text-gray-600 mb-4">Upload your business or personal brand logo</p>
+                    <button
                       onClick={() => document.getElementById('logoUpload')?.click()}
-                      className="text-emerald-500 hover:text-emerald-600 text-sm mt-1 transition-colors duration-300"
+                      className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 shadow-md"
                     >
                       {logoUrl ? 'Change Logo' : 'Upload Logo'}
                     </button>
@@ -473,118 +523,107 @@ export default function Settings() {
               </div>
 
               {/* Form Fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-gray-800 font-medium mb-2">
-                    <User className="inline mr-2" size={16} />
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    value={profile.name}
-                    onChange={(e) => handleProfileChange('name', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
+              <div className="bg-gradient-to-br from-white/90 to-emerald-50/30 backdrop-blur-sm border border-emerald-200/30 rounded-2xl p-8 shadow-lg">
+                <h3 className="text-xl font-semibold text-gray-800 mb-6">Personal Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      value={profile.name}
+                      onChange={(e) => handleProfileChange('name', e.target.value)}
+                      className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <input
+                      type="email"
+                      value={profile.email}
+                      onChange={(e) => handleProfileChange('email', e.target.value)}
+                      className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <input
+                      type="tel"
+                      value={profile.phone}
+                      onChange={(e) => handleProfileChange('phone', e.target.value)}
+                      className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
+                      placeholder="Enter your phone number"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                    <input
+                      type="text"
+                      value={profile.location}
+                      onChange={(e) => handleProfileChange('location', e.target.value)}
+                      className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
+                      placeholder="Enter your location"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Hourly Rate ($)</label>
+                    <input
+                      type="number"
+                      value={profile.hourlyRate}
+                      onChange={(e) => handleProfileChange('hourlyRate', e.target.value)}
+                      className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
+                      placeholder="Enter your hourly rate"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                    <select
+                      value={profile.currency}
+                      onChange={(e) => handleProfileChange('currency', e.target.value)}
+                      className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
+                    >
+                      <option value="USD">USD ($)</option>
+                      <option value="EUR">EUR (€)</option>
+                      <option value="GBP">GBP (£)</option>
+                      <option value="JPY">JPY (¥)</option>
+                      <option value="CAD">CAD (C$)</option>
+                      <option value="AUD">AUD (A$)</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="mt-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                  <textarea
+                    value={profile.bio}
+                    onChange={(e) => handleProfileChange('bio', e.target.value)}
+                    rows={4}
+                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 resize-none"
+                    placeholder="Tell us about yourself and your work..."
                   />
                 </div>
-
-                <div>
-                  <label className="block text-gray-800 font-medium mb-2">
-                    <Mail className="inline mr-2" size={16} />
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={profile.email}
-                    onChange={(e) => handleProfileChange('email', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-800 font-medium mb-2">
-                    <Phone className="inline mr-2" size={16} />
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    value={profile.phone}
-                    onChange={(e) => handleProfileChange('phone', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-800 font-medium mb-2">
-                    <MapPin className="inline mr-2" size={16} />
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    value={profile.location}
-                    onChange={(e) => handleProfileChange('location', e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-800 font-medium mb-2">
-                    <DollarSign className="inline mr-2" size={16} />
-                    Hourly Rate
-                  </label>
-                  <input
-                    type="number"
-                    value={profile.hourlyRate}
-                    onChange={(e) => handleProfileChange('hourlyRate', e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-800 font-medium mb-2">
-                    <Globe className="inline mr-2" size={16} />
-                    Currency
-                  </label>
-                  <select
-                    value={profile.currency}
-                    onChange={(e) => handleProfileChange('currency', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
-                  >
-                    <option value="USD" className="bg-white">USD - US Dollar</option>
-                    <option value="EUR" className="bg-white">EUR - Euro</option>
-                    <option value="GBP" className="bg-white">GBP - British Pound</option>
-                    <option value="CAD" className="bg-white">CAD - Canadian Dollar</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-gray-800 font-medium mb-2">
-                  Bio
-                </label>
-                <textarea
-                  value={profile.bio}
-                  onChange={(e) => handleProfileChange('bio', e.target.value)}
-                  rows={4}
-                  className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 resize-none"
-                  placeholder="Tell clients about yourself..."
-                />
               </div>
             </div>
           )}
 
           {/* Notifications Tab */}
           {activeTab === 'notifications' && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Notification Preferences</h2>
-              
-              <div className="space-y-4">
+            <div className="bg-gradient-to-br from-white/90 to-emerald-50/30 backdrop-blur-sm border border-emerald-200/30 rounded-2xl p-8 shadow-lg">
+              <h3 className="text-xl font-semibold text-gray-800 mb-6">Notification Preferences</h3>
+              <div className="space-y-6">
                 {Object.entries(notifications).map(([key, value]) => (
                   <div key={key} className="flex items-center justify-between p-4 bg-gradient-to-r from-white/80 to-emerald-50/30 backdrop-blur-sm rounded-xl border border-emerald-200/30">
                     <div>
-                      <h3 className="text-gray-800 font-medium capitalize">
+                      <h4 className="font-medium text-gray-800 capitalize">
                         {key.replace(/([A-Z])/g, ' $1').trim()}
-                      </h3>
-                      <p className="text-gray-600 text-sm">
+                      </h4>
+                      <p className="text-sm text-gray-600 mt-1">
                         {key === 'emailNotifications' && 'Receive notifications via email'}
                         {key === 'pushNotifications' && 'Receive push notifications on your device'}
                         {key === 'projectUpdates' && 'Get notified about project status changes'}
@@ -595,14 +634,12 @@ export default function Settings() {
                     <button
                       onClick={() => handleNotificationChange(key as keyof NotificationSettings)}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
-                        value ? 'bg-gradient-to-r from-emerald-500 to-teal-600' : 'bg-gray-200'
+                        value ? 'bg-emerald-500' : 'bg-gray-300'
                       }`}
                     >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
-                          value ? 'translate-x-6' : 'translate-x-1'
-                        }`}
-                      />
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+                        value ? 'translate-x-6' : 'translate-x-1'
+                      }`} />
                     </button>
                   </div>
                 ))}
@@ -613,10 +650,8 @@ export default function Settings() {
           {/* Categories Tab */}
           {activeTab === 'categories' && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Project Categories</h2>
-              
               {/* Add New Category */}
-              <div className="bg-gradient-to-r from-white/80 to-emerald-50/30 backdrop-blur-sm rounded-xl p-6 border border-emerald-200/30">
+              <div className="bg-gradient-to-br from-white/90 to-emerald-50/30 backdrop-blur-sm border border-emerald-200/30 rounded-2xl p-8 shadow-lg">
                 <h3 className="text-gray-800 font-medium mb-4">Add New Category</h3>
                 <div className="flex gap-3">
                   <input
@@ -703,6 +738,134 @@ export default function Settings() {
               </div>
             </div>
           )}
+
+          {/* Security Tab */}
+          {activeTab === 'security' && (
+            <div className="space-y-8">
+              {/* Change Password Section */}
+              <div className="bg-gradient-to-br from-white/90 to-emerald-50/30 backdrop-blur-sm border border-emerald-200/30 rounded-2xl p-8 shadow-lg">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="p-3 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl">
+                    <Lock className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-800">Change Password</h3>
+                    <p className="text-gray-600">Update your account password</p>
+                  </div>
+                </div>
+
+                {/* Password Change Messages */}
+                {passwordChangeMessage && (
+                  <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl">
+                    <p className="text-green-700 font-medium">{passwordChangeMessage}</p>
+                  </div>
+                )}
+
+                {passwordChangeError && (
+                  <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                    <p className="text-red-700 font-medium">{passwordChangeError}</p>
+                  </div>
+                )}
+
+                <form onSubmit={handlePasswordChange} className="space-y-6">
+                  {/* Current Password */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Current Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showCurrentPassword ? 'text' : 'password'}
+                        value={passwordData.currentPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                        className="w-full px-4 py-3 pr-12 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
+                        placeholder="Enter your current password"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                      >
+                        {showCurrentPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* New Password */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      New Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showNewPassword ? 'text' : 'password'}
+                        value={passwordData.newPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                        className="w-full px-4 py-3 pr-12 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
+                        placeholder="Enter your new password (min. 6 characters)"
+                        minLength={6}
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                      >
+                        {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Confirm New Password */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Confirm New Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        value={passwordData.confirmPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                        className="w-full px-4 py-3 pr-12 bg-white/80 backdrop-blur-sm border border-emerald-300/50 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
+                        placeholder="Confirm your new password"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                      >
+                        {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={isChangingPassword}
+                      className={`px-8 py-3 rounded-xl font-medium transition-all duration-300 ${
+                        isChangingPassword
+                          ? 'bg-gray-500 cursor-not-allowed'
+                          : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 hover:shadow-lg shadow-md'
+                      } text-white`}
+                    >
+                      {isChangingPassword ? (
+                        <>
+                          <div className="loading inline-block mr-2"></div>
+                          Changing Password...
+                        </>
+                      ) : (
+                        'Change Password'
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </motion.div>
       </div>
 
@@ -724,10 +887,10 @@ export default function Settings() {
               
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Delete Category</h3>
               <p className="text-gray-600 mb-6">
-                 Are you sure you want to delete <span className="font-medium text-gray-800">&quot;{categoryToDelete}&quot;</span>?
-                 <br />
-                 <span className="text-sm">All projects with this category will be moved to &quot;Other&quot;.</span>
-               </p>
+                Are you sure you want to delete <span className="font-medium text-gray-800">&quot;{categoryToDelete}&quot;</span>?
+                <br />
+                <span className="text-sm">All projects with this category will be moved to &quot;Other&quot;.</span>
+              </p>
               
               <div className="flex gap-3">
                 <button

@@ -1,8 +1,32 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import clientPromise from './mongodb';
+import fs from 'fs';
+import path from 'path';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production';
+
+// Helper functions for demo password persistence
+const DEMO_CONFIG_PATH = path.join(process.cwd(), 'demo-config.json');
+
+function getDemoPassword(): string {
+  try {
+    const configData = fs.readFileSync(DEMO_CONFIG_PATH, 'utf8');
+    const config = JSON.parse(configData);
+    return config.demoPassword || 'demo123';
+  } catch (error) {
+    return 'demo123'; // fallback to default
+  }
+}
+
+function setDemoPassword(newPassword: string): void {
+  try {
+    const config = { demoPassword: newPassword };
+    fs.writeFileSync(DEMO_CONFIG_PATH, JSON.stringify(config, null, 2));
+  } catch (error) {
+    console.error('Failed to save demo password:', error);
+  }
+}
 
 export interface User {
   _id?: string;
@@ -58,6 +82,18 @@ export async function createUser(userData: Omit<User, '_id' | 'createdAt'>): Pro
 }
 
 export async function authenticateUser(username: string, password: string): Promise<User | null> {
+  // Check for demo account first
+  if (username === 'demo' && password === getDemoPassword()) {
+    return {
+      _id: 'demo-user-123',
+      username: 'demo',
+      email: 'demo@example.com',
+      role: 'user',
+      password: '',
+      createdAt: new Date()
+    };
+  }
+
   const client = await clientPromise;
   const db = client.db('freelance-tracker-new');
   const users = db.collection<User>('users');
@@ -101,4 +137,43 @@ export async function getUserById(userId: string): Promise<User | null> {
     password: '', // Don't return password
     createdAt: user.createdAt
   };
+}
+
+export async function changePassword(userId: string, currentPassword: string, newPassword: string): Promise<boolean> {
+  // Handle demo account - update persistent password
+  if (userId === 'demo-user-123') {
+    if (currentPassword !== getDemoPassword()) {
+      throw new Error('Current password is incorrect');
+    }
+    // Update demo password in file
+    setDemoPassword(newPassword);
+    return true;
+  }
+
+  const client = await clientPromise;
+  const db = client.db('freelance-tracker-new');
+  const users = db.collection<User>('users');
+
+  const { ObjectId } = require('mongodb');
+  const user = await users.findOne({ _id: new ObjectId(userId) });
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  // Verify current password
+  const isCurrentPasswordValid = await verifyPassword(currentPassword, user.password);
+  if (!isCurrentPasswordValid) {
+    throw new Error('Current password is incorrect');
+  }
+
+  // Hash new password
+  const hashedNewPassword = await hashPassword(newPassword);
+
+  // Update password in database
+  const result = await users.updateOne(
+    { _id: new ObjectId(userId) },
+    { $set: { password: hashedNewPassword } }
+  );
+
+  return result.modifiedCount > 0;
 }
